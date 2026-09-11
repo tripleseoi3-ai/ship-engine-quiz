@@ -1,0 +1,1994 @@
+<title>쌓아가는 시험노트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --navy: #10335E;
+    --navy-deep: #0A2342;
+    --navy-line: #24486F;
+    --accent: #1B6FB8;
+    --accent-wash: #E8F1F9;
+    --on-accent: #FFFFFF;
+
+    --ground: #EEF1F5;
+    --surface: #FFFFFF;
+    --surface-alt: #F7F9FB;
+    --surface-sunk: #E9EDF2;
+
+    --ink: #1C2530;
+    --ink-soft: #55616F;
+    --ink-faint: #66737F;
+
+    --line: #D5DCE4;
+    --line-soft: #E6EBF0;
+
+    --ok: #1B6E43;
+    --ok-wash: #E7F3EC;
+    --bad: #B5342B;
+    --bad-wash: #FBEAE8;
+    --warn: #9C6B12;
+    --warn-wash: #FBF2DF;
+
+    --body: "IBM Plex Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+
+    --step-0: .8125rem;
+    --step-1: .9375rem;
+    --step-2: 1.0625rem;
+    --step-3: 1.25rem;
+    --step-4: 1.625rem;
+
+    --rad: 3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --navy: #16283C;
+      --navy-deep: #0E1B28;
+      --navy-line: #2A3F55;
+      --accent: #64A9DF;
+      --accent-wash: #16293A;
+      --on-accent: #08131D;
+
+      --ground: #0D1419;
+      --surface: #151E26;
+      --surface-alt: #18232C;
+      --surface-sunk: #101922;
+
+      --ink: #E3E9EF;
+      --ink-soft: #9BA8B6;
+      --ink-faint: #8C99A6;
+
+      --line: #27333E;
+      --line-soft: #1E2933;
+
+      --ok: #5BBE8B;
+      --ok-wash: #11291E;
+      --bad: #E77A72;
+      --bad-wash: #2C1615;
+      --warn: #D6A443;
+      --warn-wash: #2B2213;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --navy: #16283C;
+    --navy-deep: #0E1B28;
+    --navy-line: #2A3F55;
+    --accent: #64A9DF;
+    --accent-wash: #16293A;
+    --on-accent: #08131D;
+
+    --ground: #0D1419;
+    --surface: #151E26;
+    --surface-alt: #18232C;
+    --surface-sunk: #101922;
+
+    --ink: #E3E9EF;
+    --ink-soft: #9BA8B6;
+    --ink-faint: #8C99A6;
+
+    --line: #27333E;
+    --line-soft: #1E2933;
+
+    --ok: #5BBE8B;
+    --ok-wash: #11291E;
+    --bad: #E77A72;
+    --bad-wash: #2C1615;
+    --warn: #D6A443;
+    --warn-wash: #2B2213;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: var(--step-1);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, input, textarea, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  /* ================= 상단 유틸리티 띠 ================= */
+
+  .util {
+    background: var(--navy-deep);
+    color: #C3D2E2;
+    font-size: .75rem;
+  }
+  .util .in {
+    max-width: 1220px; margin: 0 auto; padding: 5px 18px;
+    display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+  }
+  .util .sysname { font-weight: 600; letter-spacing: .01em; color: #E4ECF4; }
+  .util .sep { color: var(--navy-line); }
+  .util .right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .util .state { font-family: var(--mono); font-size: .75rem; display: flex; align-items: center; gap: 6px; }
+  .util .state i { width: 6px; height: 6px; border-radius: 50%; background: #5BBE8B; flex: none; }
+  .util .state.off i { background: #E77A72; }
+  .util button {
+    background: none; border: 1px solid var(--navy-line); color: #D4E0EC;
+    padding: 2px 9px; border-radius: var(--rad); cursor: pointer; font-size: .75rem;
+  }
+  .util button:hover { border-color: #6E8CAC; color: #FFFFFF; }
+
+  /* ================= 남색 헤더 ================= */
+
+  .topbar { background: var(--navy); color: #FFFFFF; border-bottom: 3px solid var(--accent); }
+  .topbar .in {
+    max-width: 1220px; margin: 0 auto; padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap;
+  }
+  .topbar h1 { margin: 0; font-size: var(--step-4); font-weight: 700; letter-spacing: -.01em; }
+  .topbar .sub { font-size: var(--step-0); color: #B9CADC; max-width: 44ch; }
+  .topbar .chips { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .topbar .chip {
+    font-family: var(--mono); font-size: .75rem; letter-spacing: .02em;
+    border: 1px solid var(--navy-line); background: rgba(255,255,255,.06);
+    padding: 3px 10px; border-radius: var(--rad); color: #DCE7F1;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .topbar .chip b { color: #FFFFFF; font-weight: 600; }
+  .topbar .chip.alert { border-color: #A8564E; background: rgba(231,122,114,.14); color: #F2C9C5; }
+
+  /* ================= 빵조각 ================= */
+
+  .crumb { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .crumb .in {
+    max-width: 1220px; margin: 0 auto; padding: 8px 18px;
+    font-size: var(--step-0); color: var(--ink-soft);
+    display: flex; gap: 7px; flex-wrap: wrap; align-items: center;
+  }
+  .crumb .sl { color: var(--ink-faint); }
+  .crumb .here { color: var(--ink); font-weight: 600; }
+
+  /* ================= 레이아웃 ================= */
+
+  .wrap {
+    max-width: 1220px; margin: 0 auto; padding: 18px;
+    display: grid; grid-template-columns: 244px minmax(0, 1fr); gap: 18px; align-items: start;
+  }
+
+  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .side { position: sticky; top: 14px; }
+
+  /* ================= 패널 ================= */
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad); }
+
+  .panel-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--line);
+    border-radius: var(--rad) var(--rad) 0 0;
+  }
+  .panel-head::before { content: ""; width: 3px; height: 13px; background: var(--accent); flex: none; }
+  .panel-head h2 { margin: 0; font-size: var(--step-1); font-weight: 600; letter-spacing: -.005em; }
+  .panel-head .aside { margin-left: auto; font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .panel-body { padding: 16px 14px; }
+  .panel-body.tight { padding: 0; }
+
+  /* ================= 강의 목록 ================= */
+
+  .course-list { list-style: none; margin: 0; padding: 0; }
+  .course-list li { border-bottom: 1px solid var(--line-soft); }
+  .course-list li:last-child { border-bottom: 0; }
+
+  .course {
+    display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center;
+    width: 100%; text-align: left; background: none; border: 0;
+    border-left: 3px solid transparent; padding: 9px 12px; cursor: pointer; color: var(--ink-soft);
+  }
+  .course:hover { background: var(--surface-alt); color: var(--ink); }
+  .course[aria-current="true"] { background: var(--accent-wash); border-left-color: var(--accent); color: var(--ink); }
+  .course .nm { font-weight: 500; overflow-wrap: anywhere; font-size: var(--step-0); }
+  .course .n { font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .course .bad { color: var(--bad); font-weight: 600; }
+  .side-empty { padding: 14px; font-size: var(--step-0); color: var(--ink-faint); }
+
+  /* ================= 학습 현황 ================= */
+
+  .stat-rows { display: flex; flex-direction: column; gap: 0; }
+  .stat {
+    display: flex; justify-content: space-between; gap: 10px; align-items: baseline;
+    padding: 7px 0; border-bottom: 1px dotted var(--line);
+    font-size: var(--step-0);
+  }
+  .stat:last-child { border-bottom: 0; }
+  .stat dt { color: var(--ink-soft); }
+  .stat dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 500; text-align: right; }
+  .stat dd.bad { color: var(--bad); }
+  .stat dd.ok { color: var(--ok); }
+  dl.stat-rows { margin: 0; }
+
+  .gauge { margin-top: 12px; }
+  .gauge .cap { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-faint); font-family: var(--mono); margin-bottom: 5px; }
+  .gauge .track { height: 6px; background: var(--surface-sunk); border-radius: 999px; overflow: hidden; }
+  .gauge .track > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width .25s; }
+
+  /* ================= 탭 ================= */
+
+  .tabbar { display: flex; gap: 3px; overflow-x: auto; padding: 0 1px; }
+  .tab {
+    background: var(--surface-sunk); border: 1px solid var(--line); border-bottom: 0;
+    border-top-width: 2px; border-top-color: transparent;
+    border-radius: var(--rad) var(--rad) 0 0;
+    padding: 8px 16px; cursor: pointer; color: var(--ink-soft);
+    font-size: var(--step-0); font-weight: 500; white-space: nowrap;
+    display: flex; align-items: center; gap: 7px; position: relative; top: 1px;
+  }
+  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); font-weight: 600; border-top-color: var(--accent); }
+  .tab:hover:not([aria-selected="true"]) { color: var(--ink); }
+  .tab .n {
+    font-family: var(--mono); font-size: .75rem; font-variant-numeric: tabular-nums;
+    background: var(--line-soft); color: var(--ink-soft); border-radius: 999px; padding: 1px 6px;
+  }
+  .tab .n.hot { background: var(--bad-wash); color: var(--bad); }
+
+  /* ================= 버튼 ================= */
+
+  .btn {
+    border: 1px solid var(--line); background: var(--surface);
+    padding: 7px 14px; border-radius: var(--rad); cursor: pointer;
+    font-size: var(--step-0); font-weight: 500;
+  }
+  .btn:hover:not(:disabled) { background: var(--surface-alt); border-color: var(--ink-faint); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--accent); }
+  .btn-quiet { border-color: transparent; background: none; color: var(--accent); padding: 7px 8px; }
+  .btn-quiet:hover:not(:disabled) { background: var(--accent-wash); border-color: transparent; text-decoration: underline; }
+  .btn-block { width: 100%; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  /* ================= 폼 ================= */
+
+  .req { color: var(--bad); font-weight: 600; }
+
+  .form-row { display: grid; grid-template-columns: 104px minmax(0, 1fr); border-top: 1px solid var(--line-soft); }
+  .form-row:first-of-type { border-top: 0; }
+  .form-row > .lb {
+    background: var(--surface-alt); padding: 11px 12px;
+    font-size: var(--step-0); font-weight: 600; color: var(--ink-soft);
+    display: flex; align-items: flex-start; gap: 4px;
+  }
+  .form-row > .fd { padding: 11px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+  input[type="text"], textarea {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad);
+    padding: 8px 10px; width: 100%; font-size: var(--step-1);
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+  textarea { min-height: 216px; resize: vertical; font-family: var(--mono); font-size: .8125rem; line-height: 1.65; }
+  textarea.small { min-height: 88px; }
+  .fd .note { font-size: .75rem; color: var(--ink-faint); }
+
+  /* ================= 표 ================= */
+
+  .tbl-scroll { overflow-x: auto; }
+  table.lms { width: 100%; border-collapse: collapse; font-size: var(--step-0); }
+  table.lms thead th {
+    background: var(--surface-alt); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 8px 10px; text-align: left; font-weight: 600; color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  table.lms tbody td { border-bottom: 1px solid var(--line-soft); padding: 9px 10px; vertical-align: top; }
+  table.lms tbody tr:nth-child(even) { background: var(--surface-alt); }
+  table.lms .num { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink-faint); white-space: nowrap; }
+  table.lms .when { font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); white-space: nowrap; }
+  table.lms .q { min-width: 240px; overflow-wrap: anywhere; }
+  table.lms .mine { color: var(--bad); text-decoration: line-through; overflow-wrap: anywhere; }
+  table.lms .real { color: var(--ok); font-weight: 600; overflow-wrap: anywhere; }
+
+  .pill {
+    display: inline-block; font-family: var(--mono); font-size: .75rem; letter-spacing: .02em;
+    border: 1px solid var(--line); background: var(--surface-sunk); color: var(--ink-soft);
+    padding: 1px 7px; border-radius: 999px; white-space: nowrap;
+  }
+  .pill.t-choice { border-color: #5C8FBF; color: var(--accent); background: var(--accent-wash); }
+  .pill.t-ox { border-color: var(--warn); color: var(--warn); background: var(--warn-wash); }
+  .pill.t-short { border-color: var(--ok); color: var(--ok); background: var(--ok-wash); }
+  .pill.t-blank { border-color: var(--ink-faint); }
+
+  /* ================= 정리 ================= */
+
+  .key-sect { border-top: 1px solid var(--line-soft); padding-top: 13px; margin-top: 13px; }
+  .key-sect:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  .key-sect > h3 {
+    margin: 0 0 9px; font-size: var(--step-0); font-weight: 700; color: var(--accent);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .key-sect > h3::before { content: "▸"; font-family: var(--mono); color: var(--ink-faint); }
+
+  .kv { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+  .kv li {
+    display: grid; grid-template-columns: minmax(88px, 156px) minmax(0, 1fr); gap: 4px 12px;
+    padding: 6px 0; border-bottom: 1px dotted var(--line);
+  }
+  .kv li:last-child { border-bottom: 0; }
+  .kv .k { font-weight: 600; overflow-wrap: anywhere; }
+  .kv .v { color: var(--ink-soft); overflow-wrap: anywhere; font-size: var(--step-0); }
+  .kv .solo { grid-column: 1 / -1; }
+  .kv .formula { grid-column: 1 / -1; font-family: var(--mono); font-size: .8125rem; color: var(--accent); background: var(--accent-wash); padding: 6px 9px; border-radius: var(--rad); overflow-x: auto; }
+
+  details.src { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 13px; }
+  details.src > summary {
+    cursor: pointer; font-size: var(--step-0); font-weight: 600; color: var(--accent);
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  details.src > summary::-webkit-details-marker { display: none; }
+  details.src > summary::before { content: "＋"; font-family: var(--mono); }
+  details.src[open] > summary::before { content: "－"; }
+  details.src .cnt { margin-left: auto; font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .src-body { margin-top: 13px; overflow-x: auto; background: var(--surface-alt); border: 1px solid var(--line-soft); border-radius: var(--rad); padding: 13px; }
+  .src-body > * { margin: 0; }
+  .og-h { font-weight: 700; margin-top: 13px !important; line-height: 1.45; }
+  .og-h1 { font-size: var(--step-3); }
+  .og-h2 { font-size: var(--step-2); }
+  .og-h3 { font-size: var(--step-1); }
+  .og-p, .og-li { font-size: var(--step-0); }
+  .og-li { padding-left: 17px; position: relative; }
+  .og-li::before { content: "·"; position: absolute; left: 6px; color: var(--accent); }
+  .og-blank { height: 9px; }
+  .og-rule { border-top: 1px dashed var(--line); margin: 9px 0 !important; height: 0; }
+  .og-table { border-collapse: collapse; font-size: var(--step-0); margin: 7px 0 !important; background: var(--surface); }
+  .og-table th, .og-table td { border: 1px solid var(--line); padding: 5px 9px; text-align: left; vertical-align: top; }
+  .og-table th { background: var(--surface-sunk); font-weight: 600; }
+
+  /* ================= 출제 ================= */
+
+  .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .mode {
+    border: 1px solid var(--line); background: var(--surface-alt); border-radius: var(--rad);
+    padding: 14px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 5px;
+  }
+  .mode:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-wash); }
+  .mode:disabled { opacity: .55; cursor: not-allowed; }
+  .mode b { font-size: var(--step-1); font-weight: 600; }
+  .mode span { font-size: var(--step-0); color: var(--ink-soft); }
+  .mode .flag { font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); margin-top: 3px; }
+  .mode .flag.send { color: var(--warn); }
+
+  .qbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px; background: var(--surface-alt); border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: .75rem; color: var(--ink-soft); font-variant-numeric: tabular-nums;
+    flex-wrap: wrap;
+  }
+  .qbar .track { flex: 1; min-width: 110px; height: 5px; background: var(--surface-sunk); border-radius: 999px; overflow: hidden; }
+  .qbar .track > i { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+
+  .qprompt { font-size: var(--step-2); line-height: 1.6; margin: 12px 0 16px; font-weight: 500; overflow-wrap: anywhere; text-wrap: pretty; }
+  .qprompt .blank { font-family: var(--mono); color: var(--accent); background: var(--accent-wash); padding: 0 4px; }
+  .qprompt .quote { color: var(--ink-soft); font-weight: 400; }
+
+  .choices { display: flex; flex-direction: column; gap: 6px; }
+  .choice {
+    display: flex; gap: 10px; align-items: baseline; text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad);
+    padding: 10px 13px; cursor: pointer; overflow-wrap: anywhere;
+  }
+  .choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-wash); }
+  .choice:disabled { cursor: default; }
+  .choice .ix { font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); flex: none; }
+  .choice.is-right { border-color: var(--ok); background: var(--ok-wash); }
+  .choice.is-right .ix { color: var(--ok); }
+  .choice.is-wrong { border-color: var(--bad); background: var(--bad-wash); }
+  .choice.is-wrong .ix { color: var(--bad); }
+  .ox-row { display: flex; gap: 10px; }
+  .ox-row .choice { flex: 1; justify-content: center; font-family: var(--mono); font-size: var(--step-3); font-weight: 600; }
+
+  .verdict { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--rad); overflow: hidden; }
+  .verdict .vh {
+    display: flex; align-items: center; gap: 8px; padding: 8px 13px;
+    font-weight: 600; font-size: var(--step-0);
+  }
+  .verdict.right .vh { background: var(--ok-wash); color: var(--ok); border-bottom: 1px solid var(--ok); }
+  .verdict.wrong .vh { background: var(--bad-wash); color: var(--bad); border-bottom: 1px solid var(--bad); }
+  .verdict .vb { padding: 11px 13px; display: flex; flex-direction: column; gap: 6px; font-size: var(--step-0); }
+  .verdict .vb .row { color: var(--ink-soft); overflow-wrap: anywhere; }
+  .verdict .vb .row b { color: var(--ink); }
+  .verdict .vb .row .was { color: var(--bad); }
+  .verdict .vb .rule { color: var(--ink-faint); font-size: .75rem; }
+
+  .result { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .result .big {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 2.25rem; font-weight: 600; color: var(--accent); line-height: 1;
+  }
+  .result .of { font-family: var(--mono); color: var(--ink-faint); }
+
+  /* ================= 알림 ================= */
+
+  .msg { border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--accent-wash); border-radius: var(--rad); padding: 11px 13px; font-size: var(--step-0); color: var(--ink-soft); }
+  .msg.warn { border-left-color: var(--warn); background: var(--warn-wash); }
+  .msg.bad { border-left-color: var(--bad); background: var(--bad-wash); }
+  .msg b { color: var(--ink); }
+  .msg ul { margin: 6px 0 0; padding-left: 18px; }
+  .msg ul li { margin-bottom: 2px; }
+  .empty { color: var(--ink-faint); font-size: var(--step-0); }
+
+  /* ================= 모달 ================= */
+
+  .scrim { position: fixed; inset: 0; background: rgba(10,20,32,.6); display: grid; place-items: center; padding: 18px; z-index: 60; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad);
+    max-width: 520px; width: 100%; max-height: 86vh; overflow-y: auto;
+    box-shadow: 0 20px 48px -16px rgba(10,20,32,.5);
+  }
+  .modal .mh { background: var(--navy); color: #FFFFFF; padding: 11px 16px; font-weight: 600; font-size: var(--step-1); }
+  .modal .mb { padding: 16px; display: flex; flex-direction: column; gap: 11px; }
+  .modal .mb p { margin: 0; font-size: var(--step-0); color: var(--ink-soft); }
+  .modal .mb p.lead { color: var(--ink); }
+  .modal .mb .btn-row { margin-top: 4px; justify-content: flex-end; }
+  .modal .mb hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; width: 100%; }
+  .modal .mb h4 { margin: 0; font-size: var(--step-0); font-weight: 700; color: var(--ink-soft); }
+
+  .spin { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: sp .7s linear infinite; display: inline-block; vertical-align: -2px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  /* ================= 바닥 ================= */
+
+  .foot { background: var(--navy-deep); color: #92A6BB; margin-top: 8px; }
+  .foot .in {
+    max-width: 1220px; margin: 0 auto; padding: 16px 18px 22px;
+    font-size: .75rem; display: flex; flex-direction: column; gap: 4px;
+  }
+  .foot b { color: #C8D6E4; font-weight: 600; }
+
+  @media (max-width: 880px) {
+    .wrap { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+    .side { position: static; }
+    .topbar .chips { margin-left: 0; }
+    .form-row { grid-template-columns: minmax(0, 1fr); }
+    .form-row > .lb { border-bottom: 1px solid var(--line-soft); }
+  }
+</style>
+
+<div class="util">
+  <div class="in">
+    <span class="sysname">학습지원시스템</span>
+    <span class="sep">|</span>
+    <span>개인 학습 도구</span>
+    <span class="right">
+      <span class="state" id="stateBadge"><i></i><span>브라우저 저장</span></span>
+      <button type="button" id="btnBackup">백업 · 불러오기</button>
+    </span>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="in">
+    <div>
+      <h1>쌓아가는 시험노트</h1>
+      <div class="sub">수업을 들을 때마다 과목을 직접 등록해 늘려 가는 시험 대비 노트</div>
+    </div>
+    <div class="chips" id="topChips"></div>
+  </div>
+</div>
+
+<nav class="crumb" aria-label="현재 위치">
+  <div class="in" id="crumb"></div>
+</nav>
+
+<div class="wrap">
+  <div class="col side">
+    <section class="panel">
+      <header class="panel-head">
+        <h2>내 강의실</h2>
+        <span class="aside" id="courseCount">0</span>
+      </header>
+      <div class="panel-body tight">
+        <ul class="course-list" id="courseList"></ul>
+        <p class="side-empty" id="courseEmpty">등록된 과목이 없습니다. 오른쪽에서 첫 과목을 등록하세요.</p>
+      </div>
+      <div class="panel-body" style="border-top:1px solid var(--line-soft)">
+        <button type="button" class="btn btn-block" id="btnNew">＋ 과목 등록</button>
+      </div>
+    </section>
+    <section class="panel" id="statPanel" hidden>
+      <header class="panel-head"><h2>학습 현황</h2></header>
+      <div class="panel-body" id="statBody"></div>
+    </section>
+  </div>
+
+  <div class="col" id="main"></div>
+</div>
+
+<footer class="foot">
+  <div class="in">
+    <span><b>저장 위치</b> · 등록한 과목과 오답은 이 브라우저 안에만 저장됩니다. 기록을 지우거나 시크릿 창으로 열면 사라집니다.</span>
+    <span><b>자료 전송</b> · Claude 출제를 누르고 확인할 때만 자료가 전송됩니다. 그 밖에는 전송되지 않습니다.</span>
+    <span><b>안내</b> · 교육 실습용 개인 도구입니다. 실제 시험과 법령은 원문을 확인하세요.</span>
+  </div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ===================================================================
+     저장 — localStorage. 접근 자체가 예외를 던질 수 있으므로 전부 감싼다.
+     =================================================================== */
+
+  var KEY = "exam-notebook/v1";
+  var storeOk = true;
+  var storeWhy = "";
+
+  function loadStore() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (!raw) return { version: 1, subjects: [] };
+      var p = JSON.parse(raw);
+      if (!p || !Array.isArray(p.subjects)) return { version: 1, subjects: [] };
+      return { version: 1, subjects: p.subjects };
+    } catch (e) {
+      storeOk = false;
+      storeWhy = "이 브라우저가 저장을 막고 있습니다(시크릿 창이거나 사이트 데이터 차단).";
+      return { version: 1, subjects: [] };
+    }
+  }
+
+  function saveStore() {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(state.store));
+      if (!storeOk) { storeOk = true; storeWhy = ""; }
+      return true;
+    } catch (e) {
+      storeOk = false;
+      storeWhy = (e && e.name === "QuotaExceededError")
+        ? "저장 공간이 꽉 찼습니다. 과목을 지우거나 백업 후 정리하세요."
+        : "이 브라우저가 저장을 막고 있습니다. 창을 닫으면 사라집니다.";
+      return false;
+    }
+  }
+
+  var state = {
+    store: null, activeId: null, tab: "summary", quiz: null,
+    caps: { downloads: "pending", sample: "pending" }
+  };
+  state.store = loadStore();
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function activeSubject() {
+    for (var i = 0; i < state.store.subjects.length; i++) {
+      if (state.store.subjects[i].id === state.activeId) return state.store.subjects[i];
+    }
+    return null;
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    try {
+      var d = new Date(iso);
+      var p = function (n) { return (n < 10 ? "0" : "") + n; };
+      return d.getFullYear() + "." + p(d.getMonth() + 1) + "." + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+    } catch (e) { return "—"; }
+  }
+
+  /* ===================================================================
+     자료 해석 — 줄 단위. 한 줄도 버리지 않는다.
+     =================================================================== */
+
+  function splitLines(raw) { return String(raw == null ? "" : raw).replace(/\r\n?/g, "\n").split("\n"); }
+
+  function isTableLine(l) {
+    var t = l.trim();
+    return t.indexOf("|") === 0 && (t.match(/\|/g) || []).length >= 2;
+  }
+  function isSepRow(l) { return /^\s*\|[\s:|-]+\|\s*$/.test(l); }
+  function cells(l) {
+    return l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(function (c) { return c.trim(); });
+  }
+  function stripMd(s) {
+    return String(s).replace(/\*\*(.+?)\*\*/g, "$1").replace(/`(.+?)`/g, "$1").replace(/\*(.+?)\*/g, "$1").trim();
+  }
+
+  var PAIR_BULLET = /^[-*+]\s+(.{1,32}?)\s*[::]\s*(.{2,})$/;
+  var PAIR_BOLD = /^\*\*(.{1,32}?)\*\*\s*[::]\s*(.{2,})$/;
+
+  function parseMaterial(raw) {
+    var lines = splitLines(raw);
+    var pairs = [], statements = [], headings = [], formulas = [];
+    var section = "", i = 0;
+
+    while (i < lines.length) {
+      var line = lines[i], t = line.trim();
+
+      if (isTableLine(line)) {
+        var rows = [];
+        while (i < lines.length && isTableLine(lines[i])) { rows.push(lines[i]); i++; }
+        var body = rows.filter(function (r) { return !isSepRow(r); });
+        for (var r = 1; r < body.length; r++) {
+          var c = cells(body[r]).map(stripMd);
+          if (c.length >= 2 && c[0] && c[1] && c[0].length <= 32 && c[1].length >= 2) {
+            pairs.push({ term: c[0], def: c.slice(1).filter(Boolean).join(" · "), section: section });
+          }
+        }
+        continue;
+      }
+
+      if (/^#{1,6}\s+/.test(t)) {
+        section = stripMd(t.replace(/^#{1,6}\s+/, ""));
+        headings.push(section);
+        i++; continue;
+      }
+
+      var mb = t.match(PAIR_BULLET) || t.match(PAIR_BOLD);
+      if (mb) { pairs.push({ term: stripMd(mb[1]), def: stripMd(mb[2]), section: section }); i++; continue; }
+
+      if (t && !/^(---|===|>)/.test(t)) {
+        var s = stripMd(t.replace(/^[-*+]\s+/, "").replace(/^\d+\.\s+/, ""));
+        if (s.length >= 12) {
+          statements.push({ text: s, section: section, bold: (t.match(/\*\*(.+?)\*\*/g) || []).map(function (b) { return stripMd(b); }) });
+          if (s.indexOf("=") > -1 && s.length <= 90) formulas.push({ text: s, section: section });
+        }
+      }
+      i++;
+    }
+
+    var seen = {}, uniq = [];
+    for (var p = 0; p < pairs.length; p++) {
+      var k = pairs[p].term;
+      if (!k || seen[k]) continue;
+      seen[k] = 1; uniq.push(pairs[p]);
+    }
+    return { lines: lines, pairs: uniq, statements: statements, headings: headings, formulas: formulas };
+  }
+
+  /* ===================================================================
+     정리 — 핵심만. 원문은 아래에서 전량 펼친다.
+     =================================================================== */
+
+  var KEY_CAP = 96;
+  function clip(s) { return s.length > KEY_CAP ? s.slice(0, KEY_CAP - 1) + "…" : s; }
+
+  function summarize(m) {
+    var groups = [], index = {};
+    function bucket(name) {
+      var g = index[name];
+      if (!g) { g = { name: name || "핵심 정리", items: [] }; index[name] = g; groups.push(g); }
+      return g;
+    }
+    m.pairs.forEach(function (p) { bucket(p.section).items.push({ k: p.term, v: clip(p.def) }); });
+    m.formulas.forEach(function (f) { bucket(f.section).items.push({ formula: f.text }); });
+    m.statements.forEach(function (s) {
+      if (s.bold.length) s.bold.forEach(function (b) { if (b.length >= 2) bucket(s.section).items.push({ solo: clip(s.text) }); });
+    });
+    groups.forEach(function (g) {
+      var seen = {}, out = [];
+      g.items.forEach(function (it) {
+        var sig = it.k || it.formula || it.solo;
+        if (seen[sig]) return;
+        seen[sig] = 1;
+        if (out.length < 9) out.push(it);
+      });
+      g.items = out;
+    });
+    return groups.filter(function (g) { return g.items.length; });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  // 원문 렌더 — 모든 줄이 정확히 한 번 올라간다.
+  function renderOriginal(raw) {
+    var lines = splitLines(raw);
+    var frag = document.createDocumentFragment();
+    var shown = 0, i = 0;
+
+    while (i < lines.length) {
+      var line = lines[i];
+
+      if (isTableLine(line)) {
+        var rows = [];
+        while (i < lines.length && isTableLine(lines[i])) { rows.push(lines[i]); i++; }
+        var scroll = el("div");
+        scroll.style.overflowX = "auto";
+        var tbl = el("table", "og-table");
+        var tbody = null;
+        rows.forEach(function (r, ix) {
+          if (isSepRow(r)) return;
+          var tr = el("tr");
+          cells(r).forEach(function (c) { tr.appendChild(el(ix === 0 ? "th" : "td", null, stripMd(c))); });
+          if (ix === 0) { var th = el("thead"); th.appendChild(tr); tbl.appendChild(th); }
+          else { if (!tbody) { tbody = el("tbody"); tbl.appendChild(tbody); } tbody.appendChild(tr); }
+        });
+        scroll.appendChild(tbl);
+        frag.appendChild(scroll);
+        shown += rows.length;
+        continue;
+      }
+
+      var t = line.trim(), node;
+      if (!t) node = el("div", "og-blank");
+      else if (/^(---|===)+$/.test(t)) node = el("div", "og-rule");
+      else if (/^#{1,6}\s+/.test(t)) {
+        var lvl = (t.match(/^#+/) || ["#"])[0].length;
+        node = el("div", "og-h og-h" + Math.min(lvl, 3), stripMd(t.replace(/^#{1,6}\s+/, "")));
+      }
+      else if (/^[-*+]\s+/.test(t) || /^\d+\.\s+/.test(t)) node = el("div", "og-li", stripMd(t.replace(/^[-*+]\s+/, "").replace(/^(\d+\.)\s+/, "$1 ")));
+      else node = el("div", "og-p", stripMd(t));
+
+      frag.appendChild(node);
+      shown++; i++;
+    }
+    return { node: frag, total: lines.length, shown: shown };
+  }
+
+  /* ===================================================================
+     채점 정규화 — 띄어쓰기와 조사 차이를 정답으로 본다.
+     끝에 붙은 조사 하나만, 남는 길이가 2자 이상일 때만 떼어낸다.
+     =================================================================== */
+
+  var JOSA = ["으로서", "으로써", "이라는", "에서는", "에게서", "으로", "로서", "로써", "에서", "에게",
+              "까지", "부터", "이란", "라는", "은", "는", "이", "가", "을", "를", "의", "에", "와", "과", "도", "만", "로"];
+
+  function normalize(s) {
+    if (s == null) return "";
+    var t = String(s).trim().toLowerCase();
+    t = t.replace(/\s+/g, "");
+    t = t.replace(/[.,!?;·、。"'“”‘’()\[\]<>{}]/g, "");
+    for (var i = 0; i < JOSA.length; i++) {
+      var j = JOSA[i];
+      if (t.length - j.length >= 2 && t.slice(-j.length) === j) { t = t.slice(0, -j.length); break; }
+    }
+    return t;
+  }
+
+  function isCorrect(given, answer) {
+    var a = normalize(given), b = normalize(answer);
+    return a.length > 0 && a === b;
+  }
+
+  /* ===================================================================
+     규칙 기반 출제 — 이 브라우저 안에서만 돈다.
+     =================================================================== */
+
+  var TYPES = [
+    { id: "choice", label: "객관식" },
+    { id: "ox", label: "OX" },
+    { id: "short", label: "주관식" },
+    { id: "blank", label: "빈칸" }
+  ];
+  function typeLabel(id) {
+    for (var i = 0; i < TYPES.length; i++) if (TYPES[i].id === id) return TYPES[i].label;
+    return id;
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function blankCandidates(m) {
+    var out = [];
+    var terms = m.pairs.map(function (p) { return p.term; }).filter(function (x) { return x.length >= 2; });
+
+    m.formulas.forEach(function (f) {
+      var ops = f.text.split(/[=+]/).map(function (x) { return x.trim(); })
+        .filter(function (x) { return x.length >= 2 && x.length <= 20; });
+      if (ops.length >= 2) out.push({ text: f.text, word: ops[Math.floor(Math.random() * ops.length)], section: f.section });
+    });
+
+    m.statements.forEach(function (s) {
+      for (var i = 0; i < terms.length; i++) {
+        if (s.text.indexOf(terms[i]) > -1 && s.text.length >= 16) { out.push({ text: s.text, word: terms[i], section: s.section }); return; }
+      }
+      if (s.bold.length) {
+        for (var b = 0; b < s.bold.length; b++) {
+          var w = s.bold[b];
+          if (w.length >= 2 && w.length <= 20 && s.text.indexOf(w) > -1) { out.push({ text: s.text, word: w, section: s.section }); return; }
+        }
+      }
+    });
+
+    var seen = {}, uniq = [];
+    out.forEach(function (c) { var k = c.text + "|" + c.word; if (!seen[k]) { seen[k] = 1; uniq.push(c); } });
+    return uniq;
+  }
+
+  function availability(m) {
+    var blanks = blankCandidates(m);
+    return {
+      choice: m.pairs.length >= 3,
+      ox: m.pairs.length >= 2,
+      short: m.pairs.length >= 1,
+      blank: blanks.length >= 1,
+      blanks: blanks
+    };
+  }
+
+  function makeQuestions(m, want) {
+    var pairs = shuffle(m.pairs);
+    var av = availability(m);
+    var pools = {
+      choice: av.choice ? pairs.slice() : [],
+      ox: av.ox ? pairs.slice() : [],
+      short: av.short ? pairs.slice() : [],
+      blank: shuffle(av.blanks)
+    };
+    var cursor = { choice: 0, ox: 0, short: 0, blank: 0 };
+    var missing = [];
+
+    if (!pools.choice.length) missing.push({ type: "객관식", why: m.pairs.length ? "보기를 채울 용어가 3개 이상 필요합니다 (현재 " + m.pairs.length + "개)" : "‘용어 — 설명’ 형태(표 또는 「용어: 설명」 줄)가 없습니다" });
+    if (!pools.ox.length) missing.push({ type: "OX", why: "맞바꿔 볼 설명이 2개 이상 필요합니다" });
+    if (!pools.short.length) missing.push({ type: "주관식", why: "‘용어 — 설명’ 형태가 없습니다" });
+    if (!pools.blank.length) missing.push({ type: "빈칸", why: "용어가 들어간 완성된 문장이 없습니다" });
+
+    function build(type) {
+      var pool = pools[type], k = cursor[type];
+      if (!pool || k >= pool.length) return null;
+      cursor[type] = k + 1;
+      var item = pool[k];
+
+      if (type === "choice") {
+        var others = pairs.filter(function (p) { return p.term !== item.term; });
+        var distract = shuffle(others).slice(0, 3).map(function (p) { return p.term; });
+        if (distract.length < 2) return null;
+        return {
+          type: "choice",
+          prompt: "다음 설명에 해당하는 것은?\n「" + item.def + "」",
+          choices: shuffle([item.term].concat(distract)),
+          answer: item.term,
+          source: item.term + " — " + item.def
+        };
+      }
+
+      if (type === "ox") {
+        var alt = pairs.filter(function (p) { return p.term !== item.term && p.def !== item.def; });
+        var lie = Math.random() < 0.5 && alt.length > 0;
+        var shownDef = lie ? alt[Math.floor(Math.random() * alt.length)].def : item.def;
+        return {
+          type: "ox",
+          prompt: "「" + item.term + "」 : " + shownDef + "\n이 설명이 맞습니까?",
+          choices: ["O", "X"],
+          answer: lie ? "X" : "O",
+          source: item.term + " — " + item.def
+        };
+      }
+
+      if (type === "short") {
+        return { type: "short", prompt: "다음 설명에 해당하는 용어를 쓰세요.\n「" + item.def + "」", answer: item.term, source: item.term + " — " + item.def };
+      }
+
+      if (type === "blank") {
+        var hole = item.text.split(item.word).join("____");
+        if (hole === item.text) return null;
+        return { type: "blank", prompt: hole, answer: item.word, source: item.text };
+      }
+      return null;
+    }
+
+    var out = [];
+    TYPES.forEach(function (t) { var q = build(t.id); if (q) out.push(q); });
+    var guard = 0;
+    while (out.length < want && guard < want * 8) {
+      guard++;
+      var added = false;
+      for (var i = 0; i < TYPES.length && out.length < want; i++) {
+        var q2 = build(TYPES[i].id);
+        if (q2) { out.push(q2); added = true; }
+      }
+      if (!added) break;
+    }
+    return { questions: shuffle(out).slice(0, want), missing: missing };
+  }
+
+  /* ===================================================================
+     Claude 출제 — 자료가 전송된다. 경고와 확인을 반드시 거친다.
+     =================================================================== */
+
+  var VALID_TYPES = { choice: 1, ox: 1, short: 1, blank: 1 };
+
+  function claudePrompt(raw, want) {
+    return [
+      "너는 시험 문제 출제자다. 아래 학습 자료만 근거로 시험 문제 " + want + "개를 만들어라.",
+      "",
+      "유형은 네 가지를 반드시 모두 포함한다:",
+      "- choice : 보기 4개 중 하나를 고르는 객관식",
+      "- ox     : O 또는 X",
+      "- short  : 한 낱말로 답하는 주관식",
+      "- blank  : 문장에 ____ 를 하나 두고 들어갈 말을 쓰는 빈칸",
+      "각 유형 최소 1개. 자료에 없는 내용은 절대 만들지 마라.",
+      "주관식과 빈칸의 answer 는 자료에 그대로 나오는 낱말 하나로 한다.",
+      "",
+      "출력은 아래 JSON 하나만. 설명·인사·코드펜스 없이 JSON 만.",
+      '{"questions":[{"type":"choice","prompt":"...","choices":["...","...","...","..."],"answer":"정답 보기 원문","source":"근거가 된 자료의 한 줄"}]}',
+      "",
+      "학습 자료:",
+      "<<<",
+      raw,
+      ">>>"
+    ].join("\n");
+  }
+
+  function sanitizeClaude(data, want) {
+    var list = (data && Array.isArray(data.questions)) ? data.questions : [];
+    var out = [];
+    list.forEach(function (q) {
+      if (!q || !VALID_TYPES[q.type]) return;
+      var prompt = typeof q.prompt === "string" ? q.prompt.trim() : "";
+      var answer = q.answer == null ? "" : String(q.answer).trim();
+      if (!prompt || !answer) return;
+      var item = { type: q.type, prompt: prompt, answer: answer, source: typeof q.source === "string" ? q.source : "" };
+      if (q.type === "choice") {
+        var ch = Array.isArray(q.choices) ? q.choices.map(function (c) { return String(c).trim(); }).filter(Boolean) : [];
+        if (ch.length < 2) return;
+        if (ch.indexOf(answer) < 0) ch.push(answer);
+        item.choices = shuffle(ch).slice(0, 5);
+      } else if (q.type === "ox") {
+        item.choices = ["O", "X"];
+        item.answer = /^o$/i.test(answer) ? "O" : "X";
+      }
+      out.push(item);
+    });
+    return out.slice(0, want);
+  }
+
+  /* ===================================================================
+     화면
+     =================================================================== */
+
+  var main = document.getElementById("main");
+  var modalRoot = document.getElementById("modalRoot");
+  var WANT = 10;
+
+  function panel(title, aside) {
+    var box = el("section", "panel");
+    var head = el("header", "panel-head");
+    head.appendChild(el("h2", null, title));
+    if (aside) head.appendChild(el("span", "aside", aside));
+    var body = el("div", "panel-body");
+    box.appendChild(head);
+    box.appendChild(body);
+    return { box: box, body: body, head: head };
+  }
+
+  function renderChrome() {
+    var badge = document.getElementById("stateBadge");
+    badge.className = "state" + (storeOk ? "" : " off");
+    badge.lastChild.textContent = storeOk ? "브라우저 저장" : "저장 안 됨";
+
+    var subs = state.store.subjects;
+    var wrongTotal = 0;
+    subs.forEach(function (s) { wrongTotal += (s.wrongs || []).length; });
+
+    var chips = document.getElementById("topChips");
+    chips.innerHTML = "";
+    var c1 = el("span", "chip");
+    c1.appendChild(document.createTextNode("등록 과목 "));
+    c1.appendChild(el("b", null, String(subs.length)));
+    chips.appendChild(c1);
+    var c2 = el("span", "chip" + (wrongTotal ? " alert" : ""));
+    c2.appendChild(document.createTextNode("오답 "));
+    c2.appendChild(el("b", null, String(wrongTotal)));
+    chips.appendChild(c2);
+
+    var list = document.getElementById("courseList");
+    var none = document.getElementById("courseEmpty");
+    list.innerHTML = "";
+    document.getElementById("courseCount").textContent = subs.length;
+    none.hidden = subs.length > 0;
+
+    subs.forEach(function (s) {
+      var li = el("li");
+      var b = el("button", "course");
+      b.type = "button";
+      b.setAttribute("aria-current", s.id === state.activeId ? "true" : "false");
+      b.appendChild(el("span", "nm", s.name));
+      var n = el("span", "n");
+      var w = (s.wrongs || []).length;
+      if (w) { n.className = "n bad"; n.textContent = "오답 " + w; }
+      else { n.textContent = splitLines(s.raw).length + "줄"; }
+      b.appendChild(n);
+      b.addEventListener("click", function () {
+        state.activeId = s.id; state.tab = "summary"; state.quiz = null; render();
+      });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+  }
+
+  function renderCrumb(subject) {
+    var c = document.getElementById("crumb");
+    c.innerHTML = "";
+    var parts = ["홈", "내 강의실"];
+    if (subject) parts.push(subject.name);
+    if (state.tab === "new") parts.push("과목 등록");
+    else if (subject) parts.push(state.tab === "quiz" ? "문제 풀이" : state.tab === "wrong" ? "오답 노트" : "학습 자료");
+
+    parts.forEach(function (p, i) {
+      if (i) c.appendChild(el("span", "sl", "›"));
+      c.appendChild(el("span", i === parts.length - 1 ? "here" : null, p));
+    });
+  }
+
+  function renderStats(subject) {
+    var box = document.getElementById("statPanel");
+    var body = document.getElementById("statBody");
+    if (!subject) { box.hidden = true; return; }
+    box.hidden = false;
+    body.innerHTML = "";
+
+    var m = parseMaterial(subject.raw);
+    var av = availability(m);
+    var kinds = ["choice", "ox", "short", "blank"].filter(function (k) { return av[k]; }).length;
+
+    var dl = el("dl", "stat-rows");
+    function row(label, value, cls) {
+      var d = el("div", "stat");
+      d.appendChild(el("dt", null, label));
+      d.appendChild(el("dd", cls || null, value));
+      dl.appendChild(d);
+    }
+    row("자료 분량", splitLines(subject.raw).length + "줄");
+    row("추출 용어", m.pairs.length + "개");
+    row("출제 가능 유형", kinds + " / 4", kinds === 4 ? "ok" : null);
+    row("오답", (subject.wrongs || []).length + "건", (subject.wrongs || []).length ? "bad" : "ok");
+    row("최근 학습", fmtDate(subject.lastAt));
+    body.appendChild(dl);
+
+    if (subject.lastScore && subject.lastScore.total) {
+      var g = el("div", "gauge");
+      var cap = el("div", "cap");
+      cap.appendChild(el("span", null, "최근 회차 정답"));
+      cap.appendChild(el("span", null, subject.lastScore.right + " / " + subject.lastScore.total));
+      g.appendChild(cap);
+      var tr = el("div", "track");
+      var fi = el("i");
+      fi.style.width = Math.round(subject.lastScore.right / subject.lastScore.total * 100) + "%";
+      tr.appendChild(fi);
+      g.appendChild(tr);
+      body.appendChild(g);
+    }
+  }
+
+  function tabbar(subject) {
+    var bar = el("div", "tabbar");
+    bar.setAttribute("role", "tablist");
+    var defs = [
+      { id: "summary", label: "학습 자료" },
+      { id: "quiz", label: "문제 풀이" },
+      { id: "wrong", label: "오답 노트", n: (subject.wrongs || []).length }
+    ];
+    defs.forEach(function (d) {
+      var t = el("button", "tab");
+      t.type = "button";
+      t.setAttribute("role", "tab");
+      t.setAttribute("aria-selected", state.tab === d.id ? "true" : "false");
+      t.appendChild(el("span", null, d.label));
+      if (d.n) t.appendChild(el("span", "n hot", String(d.n)));
+      t.addEventListener("click", function () {
+        state.tab = d.id;
+        if (d.id !== "quiz") state.quiz = null;
+        render();
+      });
+      bar.appendChild(t);
+    });
+    return bar;
+  }
+
+  /* ---------------- 과목 등록 ---------------- */
+
+  function viewNew() {
+    var first = state.store.subjects.length === 0;
+    var p = panel(first ? "과목 등록 — 첫 과목을 등록하세요" : "과목 등록");
+    p.body.className = "panel-body tight";
+
+    var form = el("div");
+
+    var r1 = el("div", "form-row");
+    var lb1 = el("div", "lb");
+    lb1.appendChild(document.createTextNode("과목명"));
+    lb1.appendChild(el("span", "req", "*"));
+    r1.appendChild(lb1);
+    var fd1 = el("div", "fd");
+    var name = document.createElement("input");
+    name.type = "text";
+    name.placeholder = "예: 항해학 기초";
+    fd1.appendChild(name);
+    r1.appendChild(fd1);
+    form.appendChild(r1);
+
+    var r2 = el("div", "form-row");
+    var lb2 = el("div", "lb");
+    lb2.appendChild(document.createTextNode("학습 자료"));
+    lb2.appendChild(el("span", "req", "*"));
+    r2.appendChild(lb2);
+    var fd2 = el("div", "fd");
+    var body = document.createElement("textarea");
+    body.placeholder = [
+      "## 항법의 종류",
+      "| 항법 | 개요 |",
+      "|---|---|",
+      "| 지문항법 | 육지의 물표를 관측해 위치를 구하는 방법 |",
+      "",
+      "- 편차: 진북과 자북의 차이",
+      "- 관계식으로 정리하면 진방위 = 나침방위 + 자차 + 편차가 된다."
+    ].join("\n");
+    fd2.appendChild(body);
+    fd2.appendChild(el("div", "note", "수업 필기나 요약을 그대로 붙여넣으세요. 표나 「용어: 설명」 형태의 줄이 많을수록 문제가 잘 나옵니다. 20자 이상."));
+    fd2.appendChild(el("div", "note", "붙여넣은 내용은 이 브라우저 안에만 저장됩니다. 학번·이름·성적이 섞여 있다면 지우고 넣으세요."));
+    r2.appendChild(fd2);
+    form.appendChild(r2);
+
+    p.body.appendChild(form);
+
+    var footer = el("div", "panel-body");
+    footer.style.borderTop = "1px solid var(--line)";
+    var msg = el("div", "msg bad");
+    msg.hidden = true;
+    footer.appendChild(msg);
+    var row = el("div", "btn-row");
+    row.style.marginTop = "10px";
+    var save = el("button", "btn btn-primary", "등록하고 자료 보기");
+    save.type = "button";
+    row.appendChild(save);
+    if (!first) {
+      var cancel = el("button", "btn", "취소");
+      cancel.type = "button";
+      cancel.addEventListener("click", function () { state.tab = "summary"; render(); });
+      row.appendChild(cancel);
+    }
+    footer.appendChild(row);
+    p.box.appendChild(footer);
+
+    save.addEventListener("click", function () {
+      var n = name.value.trim(), r = body.value;
+      if (!n) { msg.hidden = false; msg.textContent = "과목명을 입력하세요."; name.focus(); return; }
+      if (r.trim().length < 20) { msg.hidden = false; msg.textContent = "학습 자료가 너무 짧습니다. 20자 이상 붙여넣으세요."; body.focus(); return; }
+      var s = { id: uid(), name: n, raw: r, createdAt: new Date().toISOString(), wrongs: [], lastAt: null, lastScore: null };
+      state.store.subjects.push(s);
+      state.activeId = s.id;
+      state.tab = "summary";
+      var ok = saveStore();
+      render();
+      if (!ok) flash("등록했지만 저장에 실패했습니다", storeWhy);
+    });
+
+    setTimeout(function () { try { name.focus(); } catch (e) {} }, 0);
+    return p.box;
+  }
+
+  /* ---------------- 학습 자료 ---------------- */
+
+  function viewSummary(subject) {
+    var frag = document.createDocumentFragment();
+    var m = parseMaterial(subject.raw);
+    var groups = summarize(m);
+    var rendered = renderOriginal(subject.raw);
+
+    var p = panel(subject.name, "용어 " + m.pairs.length + "개");
+    p.body.appendChild(el("div", "msg", "핵심만 골라 두었습니다. 아래 ‘원문 전체 보기’를 열면 붙여넣은 원문이 그대로 나옵니다."));
+
+    var holder = el("div");
+    holder.style.marginTop = "14px";
+    if (!groups.length) {
+      holder.appendChild(el("p", "empty", "핵심으로 뽑을 줄을 찾지 못했습니다. 표나 「용어: 설명」 형태를 넣으면 여기에 정리됩니다. 원문은 아래에서 그대로 볼 수 있습니다."));
+    } else {
+      groups.forEach(function (g) {
+        var sec = el("div", "key-sect");
+        sec.appendChild(el("h3", null, g.name));
+        var ul = el("ul", "kv");
+        g.items.forEach(function (it) {
+          var li = el("li");
+          if (it.formula) li.appendChild(el("span", "formula", it.formula));
+          else if (it.solo) li.appendChild(el("span", "solo v", it.solo));
+          else {
+            li.appendChild(el("span", "k", it.k));
+            li.appendChild(el("span", "v", it.v));
+          }
+          ul.appendChild(li);
+        });
+        sec.appendChild(ul);
+        holder.appendChild(sec);
+      });
+    }
+    p.body.appendChild(holder);
+
+    var det = el("details", "src");
+    var sum = el("summary");
+    sum.appendChild(el("span", null, "원문 전체 보기"));
+    sum.appendChild(el("span", "cnt", "원문 " + rendered.total + "줄 전량"));
+    det.appendChild(sum);
+    var sb = el("div", "src-body");
+    sb.appendChild(rendered.node);
+    det.appendChild(sb);
+    p.body.appendChild(det);
+
+    var row = el("div", "btn-row");
+    row.style.marginTop = "16px";
+    var go = el("button", "btn btn-primary", "문제 풀이로 이동");
+    go.type = "button";
+    go.addEventListener("click", function () { state.tab = "quiz"; render(); });
+    row.appendChild(go);
+    var del = el("button", "btn btn-quiet", "과목 삭제");
+    del.type = "button";
+    del.addEventListener("click", function () { confirmDelete(subject); });
+    row.appendChild(del);
+    p.body.appendChild(row);
+
+    frag.appendChild(p.box);
+    return frag;
+  }
+
+  /* ---------------- 문제 풀이 ---------------- */
+
+  function viewQuiz(subject) {
+    if (!state.quiz) return viewQuizStart(subject);
+    if (state.quiz.done) return viewQuizResult(subject);
+    return viewQuizQuestion(subject);
+  }
+
+  function viewQuizStart(subject) {
+    var frag = document.createDocumentFragment();
+    var p = panel("출제 방식 선택", "10문항");
+    p.body.appendChild(el("div", "msg", "객관식 · OX · 주관식 · 빈칸이 섞여 나옵니다. 유형마다 최소 1문항을 먼저 채웁니다."));
+
+    var grid = el("div", "mode-grid");
+    grid.style.marginTop = "14px";
+
+    var b1 = el("button", "mode");
+    b1.type = "button";
+    b1.appendChild(el("b", null, "앱이 자동으로 만들기"));
+    b1.appendChild(el("span", null, "이 브라우저 안에서만 만듭니다. 자료가 밖으로 나가지 않습니다."));
+    b1.appendChild(el("span", "flag", "전송 없음 · 즉시"));
+    b1.addEventListener("click", function () { startLocal(subject); });
+    grid.appendChild(b1);
+
+    var b2 = el("button", "mode");
+    b2.type = "button";
+    b2.appendChild(el("b", null, "Claude가 만들기"));
+    var note = el("span", null, "문제가 더 다양합니다. 붙여넣은 자료가 Claude로 전송됩니다.");
+    b2.appendChild(note);
+    var flag = el("span", "flag send", "전송 있음 · 확인 후 진행");
+    b2.appendChild(flag);
+    if (state.caps.sample === "pending") { b2.disabled = true; flag.className = "flag"; flag.textContent = "사용 가능 여부 확인 중…"; }
+    else if (state.caps.sample !== "ready") {
+      b2.disabled = true; flag.className = "flag"; flag.textContent = "이 화면에서는 사용할 수 없습니다";
+      note.textContent = "게시된 주소로 열면 사용할 수 있습니다. 지금은 왼쪽 자동 출제를 쓰세요.";
+    }
+    b2.addEventListener("click", function () { askClaudeConsent(subject); });
+    grid.appendChild(b2);
+
+    p.body.appendChild(grid);
+    frag.appendChild(p.box);
+
+    var wrongs = subject.wrongs || [];
+    if (wrongs.length) {
+      var wp = panel("오답 다시 풀기", wrongs.length + "건");
+      wp.body.appendChild(el("div", "msg warn", "틀린 문항 " + wrongs.length + "개가 남아 있습니다. 다시 풀어 맞히면 오답 노트에서 빠집니다."));
+      var r = el("div", "btn-row");
+      r.style.marginTop = "12px";
+      var rb = el("button", "btn btn-primary", "오답만 다시 풀기");
+      rb.type = "button";
+      rb.addEventListener("click", function () { startWrongs(subject); });
+      r.appendChild(rb);
+      wp.body.appendChild(r);
+      frag.appendChild(wp.box);
+    }
+
+    return frag;
+  }
+
+  function beginQuiz(questions, kind, missing) {
+    state.quiz = {
+      kind: kind, items: questions, ix: 0, given: null, checked: false,
+      right: 0, newWrongs: 0, cleared: 0, missing: missing || [],
+      done: questions.length === 0
+    };
+  }
+
+  function startLocal(subject) {
+    var made = makeQuestions(parseMaterial(subject.raw), WANT);
+    beginQuiz(made.questions, "local", made.missing);
+    render();
+  }
+
+  function startWrongs(subject) {
+    var items = (subject.wrongs || []).map(function (w) {
+      return { type: w.type, prompt: w.prompt, choices: w.choices, answer: w.answer, source: w.source };
+    });
+    state.tab = "quiz";
+    beginQuiz(shuffle(items), "wrong", []);
+    render();
+  }
+
+  function promptNode(text) {
+    var p = el("p", "qprompt");
+    String(text).split("\n").forEach(function (line, i) {
+      if (i) p.appendChild(document.createElement("br"));
+      var isQuote = line.indexOf("「") === 0;
+      line.split("____").forEach(function (part, j) {
+        if (j) p.appendChild(el("span", "blank", "____"));
+        if (part) p.appendChild(isQuote ? el("span", "quote", part) : document.createTextNode(part));
+      });
+    });
+    return p;
+  }
+
+  function viewQuizQuestion(subject) {
+    var q = state.quiz.items[state.quiz.ix];
+    var p = panel(state.quiz.kind === "wrong" ? "오답 다시 풀기" : "문제 풀이",
+                  state.quiz.kind === "claude" ? "Claude 출제" : state.quiz.kind === "local" ? "자동 출제" : null);
+    p.body.className = "panel-body tight";
+
+    var bar = el("div", "qbar");
+    bar.appendChild(el("span", null, (state.quiz.ix + 1) + " / " + state.quiz.items.length));
+    var track = el("div", "track");
+    var fill = el("i");
+    fill.style.width = (state.quiz.ix / state.quiz.items.length * 100) + "%";
+    track.appendChild(fill);
+    bar.appendChild(track);
+    bar.appendChild(el("span", null, "정답 " + state.quiz.right));
+    p.body.appendChild(bar);
+
+    var inner = el("div");
+    inner.style.padding = "14px";
+
+    inner.appendChild(el("span", "pill t-" + q.type, typeLabel(q.type)));
+    inner.appendChild(promptNode(q.prompt));
+
+    if (q.type === "choice" || q.type === "ox") {
+      var box = el("div", q.type === "ox" ? "ox-row" : "choices");
+      (q.choices || []).forEach(function (c, i) {
+        var b = el("button", "choice");
+        b.type = "button";
+        if (q.type !== "ox") b.appendChild(el("span", "ix", String(i + 1) + "."));
+        b.appendChild(el("span", null, c));
+        if (state.quiz.checked) {
+          b.disabled = true;
+          if (normalize(c) === normalize(q.answer)) b.classList.add("is-right");
+          else if (normalize(c) === normalize(state.quiz.given)) b.classList.add("is-wrong");
+        } else {
+          b.addEventListener("click", function () { answer(subject, c); });
+        }
+        box.appendChild(b);
+      });
+      inner.appendChild(box);
+    } else {
+      var wrap = el("div");
+      var inp = document.createElement("input");
+      inp.type = "text";
+      inp.placeholder = q.type === "blank" ? "빈칸에 들어갈 말" : "답을 입력하세요";
+      inp.style.maxWidth = "340px";
+      if (state.quiz.checked) { inp.value = state.quiz.given || ""; inp.disabled = true; }
+      wrap.appendChild(inp);
+      if (!state.quiz.checked) {
+        var r = el("div", "btn-row");
+        r.style.marginTop = "10px";
+        var sb = el("button", "btn btn-primary", "제출");
+        sb.type = "button";
+        sb.addEventListener("click", function () { answer(subject, inp.value); });
+        r.appendChild(sb);
+        var sk = el("button", "btn", "모르겠습니다");
+        sk.type = "button";
+        sk.addEventListener("click", function () { answer(subject, ""); });
+        r.appendChild(sk);
+        wrap.appendChild(r);
+        inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); answer(subject, inp.value); } });
+        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 0);
+      }
+      inner.appendChild(wrap);
+    }
+
+    if (state.quiz.checked) {
+      var ok = isCorrect(state.quiz.given, q.answer);
+      var v = el("div", "verdict " + (ok ? "right" : "wrong"));
+      var vh = el("div", "vh");
+      vh.appendChild(el("span", null, ok ? "정답입니다" : "오답입니다"));
+      v.appendChild(vh);
+      var vb = el("div", "vb");
+
+      var r1 = el("div", "row");
+      r1.appendChild(document.createTextNode("정답 · "));
+      r1.appendChild(el("b", null, q.answer));
+      vb.appendChild(r1);
+
+      if (!ok && String(state.quiz.given || "").trim()) {
+        var r2 = el("div", "row");
+        r2.appendChild(document.createTextNode("제출한 답 · "));
+        r2.appendChild(el("span", "was", state.quiz.given));
+        vb.appendChild(r2);
+      }
+      if (q.type === "short" || q.type === "blank") {
+        vb.appendChild(el("div", "rule", "채점 기준 · 띄어쓰기와 조사 차이는 정답으로 처리합니다."));
+      }
+      if (q.source) vb.appendChild(el("div", "rule", "근거 · " + q.source));
+
+      var nr = el("div", "btn-row");
+      nr.style.marginTop = "6px";
+      var next = el("button", "btn btn-primary", state.quiz.ix + 1 >= state.quiz.items.length ? "결과 보기" : "다음 문제");
+      next.type = "button";
+      next.addEventListener("click", function () {
+        if (state.quiz.ix + 1 >= state.quiz.items.length) state.quiz.done = true;
+        else { state.quiz.ix++; state.quiz.given = null; state.quiz.checked = false; }
+        render();
+      });
+      nr.appendChild(next);
+      vb.appendChild(nr);
+      v.appendChild(vb);
+      inner.appendChild(v);
+      setTimeout(function () { try { next.focus(); } catch (e) {} }, 0);
+    }
+
+    p.body.appendChild(inner);
+
+    var frag = document.createDocumentFragment();
+    frag.appendChild(p.box);
+
+    if (state.quiz.missing && state.quiz.missing.length && state.quiz.ix === 0 && !state.quiz.checked) {
+      var mp = panel("만들지 못한 유형");
+      var msg = el("div", "msg warn");
+      msg.appendChild(el("b", null, "자료에서 다음 유형을 만들 수 없었습니다."));
+      var ul = el("ul");
+      state.quiz.missing.forEach(function (mi) { ul.appendChild(el("li", null, mi.type + " — " + mi.why)); });
+      msg.appendChild(ul);
+      mp.body.appendChild(msg);
+      frag.appendChild(mp.box);
+    }
+    return frag;
+  }
+
+  function answer(subject, given) {
+    var q = state.quiz.items[state.quiz.ix];
+    state.quiz.given = given;
+    state.quiz.checked = true;
+    var ok = isCorrect(given, q.answer);
+    if (ok) state.quiz.right++;
+
+    subject.wrongs = subject.wrongs || [];
+    var sig = q.type + "|" + q.prompt;
+    var at = -1;
+    for (var i = 0; i < subject.wrongs.length; i++) {
+      if (subject.wrongs[i].type + "|" + subject.wrongs[i].prompt === sig) { at = i; break; }
+    }
+
+    if (ok) {
+      if (at > -1) { subject.wrongs.splice(at, 1); state.quiz.cleared++; }
+    } else if (at < 0) {
+      subject.wrongs.push({
+        type: q.type, prompt: q.prompt, choices: q.choices || null,
+        answer: q.answer, source: q.source || "", mine: String(given || ""), at: new Date().toISOString()
+      });
+      state.quiz.newWrongs++;
+    } else {
+      subject.wrongs[at].mine = String(given || "");
+      subject.wrongs[at].at = new Date().toISOString();
+    }
+
+    subject.lastAt = new Date().toISOString();
+    saveStore();
+    render();
+  }
+
+  function viewQuizResult(subject) {
+    var total = state.quiz.items.length;
+    if (total) {
+      subject.lastScore = { right: state.quiz.right, total: total, at: new Date().toISOString() };
+      subject.lastAt = subject.lastScore.at;
+      saveStore();
+    }
+
+    var p = panel("풀이 결과", state.quiz.kind === "wrong" ? "오답 다시 풀기" : null);
+
+    if (total === 0) {
+      p.body.appendChild(el("div", "msg bad", "자료에서 문제로 쓸 부분을 찾지 못했습니다. 표나 「용어: 설명」 형태의 줄을 더 넣어 보세요."));
+      if (state.quiz.missing.length) {
+        var ul = el("ul");
+        state.quiz.missing.forEach(function (mi) { ul.appendChild(el("li", null, mi.type + " — " + mi.why)); });
+        var m2 = el("div", "msg warn");
+        m2.style.marginTop = "10px";
+        m2.appendChild(ul);
+        p.body.appendChild(m2);
+      }
+    } else {
+      var res = el("div", "result");
+      var big = el("div");
+      big.appendChild(el("span", "big", String(state.quiz.right)));
+      big.appendChild(el("span", "of", " / " + total + " 문항"));
+      res.appendChild(big);
+      var g = el("div", "gauge");
+      g.style.flex = "1";
+      g.style.minWidth = "180px";
+      var cap = el("div", "cap");
+      cap.appendChild(el("span", null, "정답률"));
+      cap.appendChild(el("span", null, Math.round(state.quiz.right / total * 100) + "%"));
+      g.appendChild(cap);
+      var tr = el("div", "track");
+      var fi = el("i");
+      fi.style.width = Math.round(state.quiz.right / total * 100) + "%";
+      tr.appendChild(fi);
+      g.appendChild(tr);
+      res.appendChild(g);
+      p.body.appendChild(res);
+
+      var lines = [];
+      if (state.quiz.newWrongs) lines.push("오답 노트에 " + state.quiz.newWrongs + "건이 새로 담겼습니다.");
+      if (state.quiz.cleared) lines.push("다시 맞혀서 " + state.quiz.cleared + "건을 오답 노트에서 지웠습니다.");
+      if (!lines.length) lines.push("오답 노트에 변화가 없습니다.");
+      var m3 = el("div", "msg");
+      m3.style.marginTop = "14px";
+      m3.textContent = lines.join(" ");
+      p.body.appendChild(m3);
+    }
+
+    var row = el("div", "btn-row");
+    row.style.marginTop = "14px";
+    var again = el("button", "btn btn-primary", "새로 출제");
+    again.type = "button";
+    again.addEventListener("click", function () { state.quiz = null; render(); });
+    row.appendChild(again);
+    if ((subject.wrongs || []).length) {
+      var wb = el("button", "btn", "오답 노트 (" + subject.wrongs.length + "건)");
+      wb.type = "button";
+      wb.addEventListener("click", function () { state.tab = "wrong"; state.quiz = null; render(); });
+      row.appendChild(wb);
+    }
+    p.body.appendChild(row);
+    return p.box;
+  }
+
+  /* ---------------- 오답 노트 ---------------- */
+
+  function viewWrong(subject) {
+    var wrongs = subject.wrongs || [];
+    var p = panel("오답 노트", wrongs.length + "건");
+
+    if (!wrongs.length) {
+      p.body.appendChild(el("div", "msg", "아직 오답이 없습니다. 문제를 풀면 틀린 문항만 이 표에 모입니다."));
+      return p.box;
+    }
+
+    p.body.className = "panel-body tight";
+    var head = el("div", "panel-body");
+    head.style.paddingBottom = "0";
+    head.appendChild(el("div", "msg", "다시 풀어 맞히면 그 문항은 표에서 빠집니다."));
+    p.body.appendChild(head);
+
+    var scroll = el("div", "tbl-scroll");
+    scroll.style.marginTop = "14px";
+    var tbl = el("table", "lms");
+    var thead = el("thead");
+    var htr = el("tr");
+    ["번호", "유형", "문항", "제출한 답", "정답", "틀린 일시"].forEach(function (h) { htr.appendChild(el("th", null, h)); });
+    thead.appendChild(htr);
+    tbl.appendChild(thead);
+
+    var tbody = el("tbody");
+    wrongs.slice().reverse().forEach(function (w, i) {
+      var tr = el("tr");
+      tr.appendChild(el("td", "num", String(wrongs.length - i)));
+      var tdType = el("td");
+      tdType.appendChild(el("span", "pill t-" + w.type, typeLabel(w.type)));
+      tr.appendChild(tdType);
+      var tdQ = el("td", "q");
+      tdQ.appendChild(el("div", null, String(w.prompt).replace(/\n/g, " ")));
+      if (w.source) tdQ.appendChild(el("div", "when", "근거 · " + w.source));
+      tr.appendChild(tdQ);
+      tr.appendChild(el("td", "mine", (w.mine && w.mine.trim()) ? w.mine : "(빈 답)"));
+      tr.appendChild(el("td", "real", w.answer));
+      tr.appendChild(el("td", "when", fmtDate(w.at)));
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    scroll.appendChild(tbl);
+    p.body.appendChild(scroll);
+
+    var foot = el("div", "panel-body");
+    foot.style.borderTop = "1px solid var(--line)";
+    var row = el("div", "btn-row");
+    var rb = el("button", "btn btn-primary", "오답만 다시 풀기");
+    rb.type = "button";
+    rb.addEventListener("click", function () { startWrongs(subject); });
+    row.appendChild(rb);
+    var cb = el("button", "btn btn-quiet", "오답 전체 삭제");
+    cb.type = "button";
+    cb.addEventListener("click", function () {
+      openModal("오답 전체 삭제", function (close) {
+        var b = el("div");
+        b.appendChild(el("p", "lead", "오답 " + wrongs.length + "건을 삭제할까요?"));
+        b.appendChild(el("p", null, "삭제한 오답은 되돌릴 수 없습니다."));
+        var r = el("div", "btn-row");
+        var no = el("button", "btn", "취소");
+        no.type = "button";
+        no.addEventListener("click", close);
+        var yes = el("button", "btn btn-primary", "삭제");
+        yes.type = "button";
+        yes.addEventListener("click", function () { subject.wrongs = []; saveStore(); close(); render(); });
+        r.appendChild(no); r.appendChild(yes);
+        b.appendChild(r);
+        return b;
+      });
+    });
+    row.appendChild(cb);
+    foot.appendChild(row);
+    p.box.appendChild(foot);
+
+    return p.box;
+  }
+
+  /* ---------------- 모달 ---------------- */
+
+  var openScrim = null;
+
+  function openModal(title, builder) {
+    closeModal();
+    var scrim = el("div", "scrim");
+    var modal = el("div", "modal");
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.appendChild(el("div", "mh", title));
+    var mb = el("div", "mb");
+    mb.appendChild(builder(closeModal));
+    modal.appendChild(mb);
+    scrim.appendChild(modal);
+    scrim.addEventListener("click", function (e) { if (e.target === scrim) closeModal(); });
+    modalRoot.appendChild(scrim);
+    openScrim = scrim;
+    document.addEventListener("keydown", escClose);
+    var f = modal.querySelector("button, input, textarea");
+    if (f) setTimeout(function () { try { f.focus(); } catch (e) {} }, 0);
+  }
+
+  function escClose(e) { if (e.key === "Escape") closeModal(); }
+
+  function closeModal() {
+    if (openScrim && openScrim.parentNode) openScrim.parentNode.removeChild(openScrim);
+    openScrim = null;
+    document.removeEventListener("keydown", escClose);
+  }
+
+  function flash(title, text) {
+    openModal(title || "알림", function (close) {
+      var b = el("div");
+      b.appendChild(el("p", "lead", text));
+      var r = el("div", "btn-row");
+      var ok = el("button", "btn btn-primary", "확인");
+      ok.type = "button";
+      ok.addEventListener("click", close);
+      r.appendChild(ok);
+      b.appendChild(r);
+      return b;
+    });
+  }
+
+  function confirmDelete(subject) {
+    openModal("과목 삭제", function (close) {
+      var b = el("div");
+      b.appendChild(el("p", "lead", "「" + subject.name + "」을 삭제할까요?"));
+      b.appendChild(el("p", null, "붙여넣은 학습 자료와 오답 노트가 함께 사라집니다. 되돌릴 수 없습니다."));
+      var r = el("div", "btn-row");
+      var no = el("button", "btn", "취소");
+      no.type = "button";
+      no.addEventListener("click", close);
+      var yes = el("button", "btn btn-primary", "삭제");
+      yes.type = "button";
+      yes.addEventListener("click", function () {
+        state.store.subjects = state.store.subjects.filter(function (s) { return s.id !== subject.id; });
+        state.activeId = state.store.subjects.length ? state.store.subjects[0].id : null;
+        state.tab = "summary"; state.quiz = null;
+        saveStore(); close(); render();
+      });
+      r.appendChild(no); r.appendChild(yes);
+      b.appendChild(r);
+      return b;
+    });
+  }
+
+  /* ---------------- Claude 출제: 경고 → 확인 → 전송 ---------------- */
+
+  function askClaudeConsent(subject) {
+    openModal("자료 전송 확인", function (close) {
+      var b = el("div");
+      b.appendChild(el("p", "lead", "「" + subject.name + "」에 등록한 학습 자료 " + splitLines(subject.raw).length + "줄 전체가 Claude로 전송됩니다."));
+      var w = el("div", "msg bad");
+      w.appendChild(el("b", null, "학번 · 이름 · 성적이 섞여 있으면 취소하세요."));
+      w.appendChild(document.createTextNode(" 취소하면 아무것도 전송되지 않으며, 자동 출제는 그대로 사용할 수 있습니다."));
+      b.appendChild(w);
+      var r = el("div", "btn-row");
+      var no = el("button", "btn", "취소");
+      no.type = "button";
+      no.addEventListener("click", close);
+      var yes = el("button", "btn btn-primary", "전송하고 출제");
+      yes.type = "button";
+      yes.addEventListener("click", function () { close(); runClaude(subject); });
+      r.appendChild(no); r.appendChild(yes);
+      b.appendChild(r);
+      return b;
+    });
+  }
+
+  function runClaude(subject) {
+    var controller = null;
+    try { controller = new AbortController(); } catch (e) { controller = null; }
+    var cancelled = false;
+
+    openModal("Claude 출제 중", function (close) {
+      var b = el("div");
+      var p = el("p", "lead");
+      p.appendChild(el("span", "spin"));
+      p.appendChild(document.createTextNode("  문제를 만들고 있습니다. 5초에서 1분쯤 걸립니다."));
+      b.appendChild(p);
+      b.appendChild(el("p", null, "이 창을 닫지 마세요."));
+      var r = el("div", "btn-row");
+      var stop = el("button", "btn", "중단");
+      stop.type = "button";
+      stop.addEventListener("click", function () {
+        cancelled = true;
+        if (controller) { try { controller.abort(); } catch (e) {} }
+        close();
+      });
+      r.appendChild(stop);
+      b.appendChild(r);
+      return b;
+    });
+
+    window.claude.use("sample").then(function (sample) {
+      if (!sample) throw { code: "not_granted" };
+      var opts = { modelTier: "default" };
+      if (controller) opts.signal = controller.signal;
+      return sample.json(claudePrompt(subject.raw, WANT), opts);
+    }).then(function (data) {
+      if (cancelled) return;
+      var qs = sanitizeClaude(data, WANT);
+      closeModal();
+      if (!qs.length) {
+        flash("출제 실패", "Claude가 쓸 수 있는 형태로 문제를 돌려주지 않았습니다. 자동 출제를 쓰거나, 자료를 조금 더 넣고 다시 시도하세요.");
+        return;
+      }
+      beginQuiz(qs, "claude", []);
+      state.tab = "quiz";
+      render();
+    }).catch(function (err) {
+      if (cancelled) return;
+      closeModal();
+      var code = err && err.code ? err.code : "";
+      if (code === "cancelled") return;
+      var msg;
+      if (code === "not_granted") { state.caps.sample = "off"; msg = "Claude 출제 권한이 없습니다. 자동 출제를 사용하세요."; }
+      else if (code === "rate_limited") msg = "요청이 너무 잦습니다. 잠시 뒤 다시 시도하세요. 그동안 자동 출제를 쓸 수 있습니다.";
+      else msg = "Claude 출제가 실패했습니다. 자동 출제를 쓰거나 잠시 뒤 다시 시도하세요.";
+      flash("출제 실패", msg);
+      render();
+    });
+  }
+
+  /* ---------------- 백업 ---------------- */
+
+  function backupText() {
+    return JSON.stringify({ version: 1, savedAt: new Date().toISOString(), subjects: state.store.subjects }, null, 2);
+  }
+
+  function openBackup() {
+    openModal("백업 · 불러오기", function (close) {
+      var b = el("div");
+      b.appendChild(el("p", "lead", "등록한 과목과 오답은 이 브라우저에만 있습니다. 다른 기기로 옮기려면 파일로 내보낸 뒤 그 기기에서 불러오세요."));
+
+      b.appendChild(el("h4", null, "내보내기"));
+      var row = el("div", "btn-row");
+      var dl = el("button", "btn btn-primary", "파일로 내보내기");
+      dl.type = "button";
+      if (state.caps.downloads === "pending") { dl.disabled = true; dl.textContent = "확인 중…"; }
+      else if (state.caps.downloads !== "ready") { dl.disabled = true; dl.textContent = "이 화면에서는 내려받기 불가"; }
+      dl.addEventListener("click", function () {
+        var name = "시험노트_백업_" + new Date().toISOString().slice(0, 10) + ".json";
+        window.claude.use("downloads").then(function (d) {
+          if (!d) throw { code: "not_granted" };
+          return d.save({ filename: name, data: backupText() });
+        }).then(function () {
+          flash("내보내기 완료", "파일 이름은 " + name + " 입니다.");
+        }).catch(function () {
+          flash("내보내기 안 됨", "내려받기가 취소되었거나 이 화면에서는 사용할 수 없습니다. 아래 글상자의 내용을 복사해 두어도 백업이 됩니다.");
+        });
+      });
+      row.appendChild(dl);
+      b.appendChild(row);
+
+      var cw = el("div");
+      cw.appendChild(el("p", null, "또는 아래 내용을 복사해 두세요."));
+      var ta = document.createElement("textarea");
+      ta.className = "small";
+      ta.readOnly = true;
+      ta.value = backupText();
+      cw.appendChild(ta);
+      b.appendChild(cw);
+
+      b.appendChild(el("hr"));
+      b.appendChild(el("h4", null, "불러오기"));
+
+      var fw = el("div");
+      fw.appendChild(el("p", null, "백업 파일 선택"));
+      var file = document.createElement("input");
+      file.type = "file";
+      file.accept = ".json,application/json,text/plain";
+      file.addEventListener("change", function () {
+        var f = file.files && file.files[0];
+        if (!f) return;
+        try {
+          var rd = new FileReader();
+          rd.onload = function () { applyBackup(String(rd.result), close); };
+          rd.onerror = function () { flash("읽기 실패", "파일을 읽지 못했습니다. 아래 글상자에 내용을 붙여넣으세요."); };
+          rd.readAsText(f);
+        } catch (e) {
+          flash("읽기 실패", "이 화면에서는 파일 읽기가 안 됩니다. 아래 글상자에 내용을 붙여넣으세요.");
+        }
+      });
+      fw.appendChild(file);
+      b.appendChild(fw);
+
+      var pw = el("div");
+      pw.appendChild(el("p", null, "또는 백업 내용 붙여넣기"));
+      var pta = document.createElement("textarea");
+      pta.className = "small";
+      pta.placeholder = '{"version":1,"subjects":[ … ]}';
+      pw.appendChild(pta);
+      b.appendChild(pw);
+
+      var r2 = el("div", "btn-row");
+      var cl = el("button", "btn", "닫기");
+      cl.type = "button";
+      cl.addEventListener("click", close);
+      r2.appendChild(cl);
+      var imp = el("button", "btn", "붙여넣은 내용 불러오기");
+      imp.type = "button";
+      imp.addEventListener("click", function () { applyBackup(pta.value, close); });
+      r2.appendChild(imp);
+      b.appendChild(r2);
+
+      return b;
+    });
+  }
+
+  function applyBackup(text, close) {
+    var data;
+    try { data = JSON.parse(text); }
+    catch (e) { flash("불러오기 실패", "백업 내용을 읽지 못했습니다. 파일 전체가 온전히 들어왔는지 확인하세요."); return; }
+    if (!data || !Array.isArray(data.subjects)) { flash("불러오기 실패", "백업 형태가 아닙니다. subjects 목록이 있는 백업이 필요합니다."); return; }
+
+    var incoming = data.subjects.filter(function (s) { return s && typeof s.name === "string" && typeof s.raw === "string"; });
+    if (!incoming.length) { flash("불러오기 실패", "불러올 과목이 없습니다."); return; }
+
+    if (close) close();
+    openModal("불러오기 방식", function (c2) {
+      var b = el("div");
+      b.appendChild(el("p", "lead", "과목 " + incoming.length + "개를 찾았습니다."));
+      b.appendChild(el("p", null, incoming.map(function (s) { return s.name; }).join(" · ")));
+      b.appendChild(el("p", null, "현재 이 브라우저에는 " + state.store.subjects.length + "개가 등록되어 있습니다."));
+      var r = el("div", "btn-row");
+      var merge = el("button", "btn btn-primary", "합치기");
+      merge.type = "button";
+      merge.addEventListener("click", function () {
+        incoming.forEach(function (s) {
+          var name = s.name, n = 2;
+          while (state.store.subjects.some(function (x) { return x.name === name; })) { name = s.name + " (" + n + ")"; n++; }
+          state.store.subjects.push({
+            id: uid(), name: name, raw: s.raw, createdAt: s.createdAt || new Date().toISOString(),
+            wrongs: Array.isArray(s.wrongs) ? s.wrongs : [], lastAt: s.lastAt || null, lastScore: s.lastScore || null
+          });
+        });
+        finishImport(c2);
+      });
+      var over = el("button", "btn", "덮어쓰기");
+      over.type = "button";
+      over.addEventListener("click", function () {
+        state.store.subjects = incoming.map(function (s) {
+          return {
+            id: uid(), name: s.name, raw: s.raw, createdAt: s.createdAt || new Date().toISOString(),
+            wrongs: Array.isArray(s.wrongs) ? s.wrongs : [], lastAt: s.lastAt || null, lastScore: s.lastScore || null
+          };
+        });
+        finishImport(c2);
+      });
+      var no = el("button", "btn", "취소");
+      no.type = "button";
+      no.addEventListener("click", c2);
+      r.appendChild(no); r.appendChild(over); r.appendChild(merge);
+      b.appendChild(r);
+      return b;
+    });
+  }
+
+  function finishImport(close) {
+    state.activeId = state.store.subjects.length ? state.store.subjects[0].id : null;
+    state.tab = "summary";
+    state.quiz = null;
+    var ok = saveStore();
+    close();
+    render();
+    if (!ok) flash("저장 실패", "불러왔지만 저장에 실패했습니다. " + storeWhy);
+  }
+
+  /* ---------------- 전체 그리기 ---------------- */
+
+  function render() {
+    renderChrome();
+    main.innerHTML = "";
+
+    var subject = null;
+    if (state.store.subjects.length) {
+      subject = activeSubject();
+      if (!subject) { state.activeId = state.store.subjects[0].id; subject = state.store.subjects[0]; }
+    }
+
+    var showNew = state.tab === "new" || !state.store.subjects.length;
+    renderCrumb(showNew ? null : subject);
+    renderStats(showNew ? null : subject);
+
+    if (!storeOk) {
+      var w = el("div", "msg bad");
+      w.appendChild(el("b", null, "저장되지 않습니다. "));
+      w.appendChild(document.createTextNode(storeWhy + " 창을 닫으면 등록한 자료가 사라집니다."));
+      main.appendChild(w);
+    }
+
+    if (showNew) { main.appendChild(viewNew()); return; }
+
+    main.appendChild(tabbar(subject));
+    if (state.tab === "quiz") main.appendChild(viewQuiz(subject));
+    else if (state.tab === "wrong") main.appendChild(viewWrong(subject));
+    else main.appendChild(viewSummary(subject));
+  }
+
+  document.getElementById("btnNew").addEventListener("click", function () { state.tab = "new"; state.quiz = null; render(); });
+  document.getElementById("btnBackup").addEventListener("click", openBackup);
+
+  if (state.store.subjects.length) state.activeId = state.store.subjects[0].id;
+  render();
+
+  /* ---------------- 권한은 나중에 도착한다. 도착하면 기능만 켠다. ---------------- */
+
+  function wire(name) {
+    var api = window.claude && window.claude.use;
+    if (!api) { state.caps[name] = "off"; if (!openScrim) render(); return; }
+    window.claude.use(name).then(function (ns) {
+      state.caps[name] = ns ? "ready" : "off";
+      if (!openScrim) render();
+    }).catch(function () {
+      state.caps[name] = "off";
+      if (!openScrim) render();
+    });
+  }
+
+  wire("sample");
+  wire("downloads");
+})();
+</script>
