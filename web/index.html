@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시험노트 — 내 수업으로 만드는 문제</title>
+<meta name="description" content="수업 자료를 붙여넣으면 객관식·OX·주관식·빈칸 문제를 만들어 주고, 틀린 문제만 모아 다시 풀 수 있는 시험 대비 노트.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="util">
+  <div class="in">
+    <span class="sys">시험노트</span>
+    <span class="sep">|</span>
+    <span>수업을 들을 때마다 과목을 늘려 갑니다</span>
+    <span class="right">
+      <span class="conn" id="conn"><i></i><span id="connText">이 브라우저에 저장</span></span>
+    </span>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="in">
+    <div>
+      <h1>시험노트</h1>
+      <div class="sub">수업 자료를 붙여넣으면 문제를 만들어 드립니다. 틀린 것만 모아 다시 풀 수 있습니다.</div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<nav class="crumb" aria-label="현재 위치">
+  <div class="in" id="crumb"></div>
+</nav>
+
+<div class="wrap">
+  <div class="col side">
+    <section class="panel">
+      <header class="panel-head">
+        <h2>내 과목</h2>
+        <span class="aside" id="courseCount">0</span>
+      </header>
+      <div class="panel-body tight">
+        <ul class="courses" id="courses"></ul>
+        <p class="side-empty" id="coursesEmpty">등록된 과목이 없습니다.</p>
+      </div>
+      <div class="panel-body" style="border-top:1px solid var(--line-soft)">
+        <button type="button" class="btn btn-block" id="btnNew">＋ 과목 등록</button>
+      </div>
+    </section>
+
+    <section class="panel" id="statPanel" hidden>
+      <header class="panel-head"><h2>학습 현황</h2></header>
+      <div class="panel-body"><dl class="stats" id="stats"></dl></div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head"><h2>보관</h2></header>
+      <div class="panel-body">
+        <p class="note" style="margin:0 0 10px">
+          등록한 과목과 오답은 이 브라우저에만 있습니다. 다른 기기로 옮기려면 파일로 내보낸 뒤 그 기기에서 불러오세요.
+        </p>
+        <div class="btn-row" style="margin-top:0">
+          <button type="button" class="btn" id="btnExport">파일로 내보내기</button>
+          <button type="button" class="btn btn-text" id="btnImport">불러오기</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head"><h2>미리 만들어 둔 문제</h2></header>
+      <div class="panel-body">
+        <p class="note" style="margin:0 0 10px">
+          항해학·해사법규·선박기관 학습자료에서 뽑은 20문항입니다. 등록 없이 바로 풀 수 있습니다.
+        </p>
+        <a class="btn" href="/20.html" style="display:inline-block;text-decoration:none">20문항 풀러 가기</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="col" id="main"></div>
+</div>
+
+<footer class="foot">
+  <div class="in">
+    <span><b>저장 위치</b> · 붙여넣은 자료와 오답은 이 브라우저 안에만 있습니다. 어디로도 전송되지 않습니다.</span>
+    <span><b>주의</b> · 브라우저 기록을 지우거나 시크릿 창으로 열면 사라집니다. 중요하면 파일로 내보내 두세요.</span>
+    <span><b>안내</b> · 교육 실습용 개인 도구입니다. 실제 시험과 법령은 원문을 확인하세요.</span>
+  </div>
+</footer>
+
+<input type="file" id="importFile" accept=".json,application/json,text/plain" hidden>
+
+<script src="/study.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
