@@ -5,6 +5,7 @@
   "description": "학습자료에서 뽑은 해양 3과목 시험 대비 문제 페이지와 로컬 서버 앱",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve-site.mjs",
     "start": "node server/server.js",
     "check": "node --check server/server.js && node --check server/lib/study.js && node --check server/public/app.js"
   },
