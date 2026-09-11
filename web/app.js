@@ -1287,42 +1287,59 @@ function startQuiz(mode) {
   render();
 }
 
-/** 정답 여부를 오답 노트와 복습 일정에 반영한다. */
+/**
+ * 정답 여부를 오답 노트와 복습 일정에 반영한다.
+ * 무슨 일이 일어났는지 돌려준다 — 화면이 그대로 글자로 알려 줘야 하기 때문이다.
+ *   clean     오답 노트에 없던 문항을 맞혔다 (아무 일도 일어나지 않음)
+ *   advanced  연속 맞힘이 한 단계 올라갔다
+ *   graduated 끝까지 맞혀 목록에서 뺐다
+ *   added     새로 오답 노트에 넣었다
+ *   reset     이미 있던 문항을 또 틀려 처음으로 돌렸다
+ */
 function recordAnswer(item, given, ok) {
   const s = findSubject(item.subjectId) || active();
-  if (!s) return;
+  if (!s) return "none";
   s.wrongs = s.wrongs || [];
   const today = todayKey();
   const sig = item.type + "|" + item.prompt;
   const at = s.wrongs.findIndex((w) => w.type + "|" + w.prompt === sig);
+  const stamp = new Date().toISOString();
+  let outcome;
 
   if (ok) {
-    if (at > -1) {
+    if (at < 0) {
+      outcome = "clean";                   // 처음부터 맞힌 문항 — 오답 노트와 무관하다
+    } else {
       const w = s.wrongs[at];
       w.stage = (w.stage || 0) + 1;
       if (w.stage >= REVIEW_STEPS.length) {
         s.wrongs.splice(at, 1);            // 다 외웠다 — 목록에서 뺀다
+        outcome = "graduated";
       } else {
         w.due = addDays(today, REVIEW_STEPS[w.stage]);
-        w.at = new Date().toISOString();
+        w.at = stamp;
+        outcome = "advanced";
       }
     }
   } else if (at < 0) {
     s.wrongs.push(normalizeWrong({
       type: item.type, prompt: item.prompt, choices: item.choices || null,
       answer: item.answer, also: item.also || [], why: item.why || "", source: item.source || "",
-      mine: String(given || ""), at: new Date().toISOString(),
+      mine: String(given || ""), at: stamp,
       stage: 0, due: addDays(today, REVIEW_STEPS[0]), missCount: 1,
     }));
+    outcome = "added";
   } else {
     const w = s.wrongs[at];
     w.mine = String(given || "");
-    w.at = new Date().toISOString();
+    w.at = stamp;
     w.stage = 0;
     w.due = addDays(today, REVIEW_STEPS[0]);
     w.missCount = (w.missCount || 1) + 1;
+    outcome = "reset";
   }
-  s.lastAt = new Date().toISOString();
+  s.lastAt = stamp;
+  return outcome;
 }
 
 function endSession(q) {
@@ -1345,7 +1362,7 @@ function submit(given) {
 
   const ok = S.isCorrect(given, item);
   if (ok) q.right++;
-  recordAnswer(item, given, ok);
+  q.outcome = recordAnswer(item, given, ok);
   saveStore();
   render();
 }
@@ -1357,7 +1374,7 @@ function nextQuestion() {
     endSession(q);
     saveStore();
   } else {
-    q.ix++; q.given = null; q.checked = false;
+    q.ix++; q.given = null; q.checked = false; q.outcome = null;
   }
   render();
 }
@@ -1448,7 +1465,8 @@ function viewQuizQuestion() {
       vb.appendChild(el("p", "rule", "채점 기준 · 띄어쓰기와 조사 차이는 정답으로 처리합니다."));
     }
     if (item.source) vb.appendChild(el("p", "rule", "출처 · " + item.source));
-    vb.appendChild(el("p", "rule", reviewNote(item, ok)));
+    const note = reviewNote(item, q.outcome);
+    if (note) vb.appendChild(el("p", "rule", note));
 
     const row = el("div", "btn-row");
     row.style.marginTop = "6px";
@@ -1475,17 +1493,20 @@ function viewQuizQuestion() {
   return frag;
 }
 
-/** 이 문항이 언제 다시 올라오는지 글자로 알려 준다. */
-function reviewNote(item, ok) {
+/** 이 문항이 어떻게 됐고 언제 다시 올라오는지 글자로 알려 준다. */
+function reviewNote(item, outcome) {
+  const total = REVIEW_STEPS.length;
+  if (outcome === "clean") return "복습 · 처음부터 맞혔습니다. 오답 노트에 넣지 않습니다.";
+  if (outcome === "graduated") return `복습 · 연속 ${total}번 맞혀 오답 노트에서 뺐습니다.`;
+
   const s = findSubject(item.subjectId);
-  if (!s) return "";
-  const w = (s.wrongs || []).find((x) => x.type + "|" + x.prompt === item.type + "|" + item.prompt);
-  if (!w) {
-    return ok
-      ? `복습 · ${REVIEW_STEPS.length}번 연속으로 맞혀 오답 노트에서 뺐습니다.`
-      : "복습 · 오답 노트에 넣었습니다.";
-  }
-  return `복습 · ${w.stage} / ${REVIEW_STEPS.length}단계 · 다음 복습일 ${fmtDay(w.due)}`;
+  const w = s && (s.wrongs || []).find((x) => x.type + "|" + x.prompt === item.type + "|" + item.prompt);
+  if (!w) return "";
+
+  if (outcome === "advanced") return `복습 · 연속 ${w.stage} / ${total}번 맞힘 · 다음 복습일 ${fmtDay(w.due)}`;
+  if (outcome === "added") return `복습 · 오답 노트에 넣었습니다 · 다음 복습일 ${fmtDay(w.due)}`;
+  if (outcome === "reset") return `복습 · 다시 틀려 처음으로 돌아갔습니다 · 다음 복습일 ${fmtDay(w.due)}`;
+  return "";
 }
 
 function viewQuizResult() {
@@ -1579,9 +1600,10 @@ function viewExamQuestion() {
       b.type = "button";
       if (item.type !== "ox") b.appendChild(el("span", "ix", (i + 1) + "."));
       b.appendChild(el("span", null, c));
+      // 채점 전이므로 초록(정답 색)을 쓰지 않는다 — 디자인.md 4장
       if (S.normalize(q.answers[q.ix]) === S.normalize(c) && String(q.answers[q.ix] || "").trim()) {
-        b.classList.add("show-answer");
-        b.appendChild(el("span", "ix", "고름"));
+        b.classList.add("picked");
+        b.appendChild(el("span", "mark", "고름"));
       }
       b.addEventListener("click", () => examPick(c));
       box.appendChild(b);
@@ -1701,7 +1723,7 @@ function viewWrong() {
   const head = el("div", "panel-body");
   head.style.paddingBottom = "0";
   head.appendChild(notice(null, null,
-    `틀린 문항은 ${REVIEW_STEPS.join("·")}일 간격으로 다시 올라옵니다. 맞힐 때마다 한 단계 올라가고, ${REVIEW_STEPS.length}단계를 넘기면 목록에서 빠집니다. 다시 틀리면 1단계로 돌아갑니다.`));
+    `틀린 문항은 ${REVIEW_STEPS.join("·")}일 간격으로 다시 올라옵니다. 다시 풀어 맞힐 때마다 간격이 한 칸씩 늘고, 연속 ${REVIEW_STEPS.length}번 맞히면 목록에서 빠집니다. 한 번이라도 틀리면 처음으로 돌아갑니다.`));
   const figs = el("div", "figs");
   figs.style.marginTop = "14px";
   figs.append(
@@ -1716,7 +1738,7 @@ function viewWrong() {
   const tbl = el("table", "lms");
   const thead = el("thead");
   const htr = el("tr");
-  ["번호", "유형", "문항", "제출한 답", "정답", "복습", "다음 복습일"].forEach((h) => htr.appendChild(el("th", null, h)));
+  ["번호", "유형", "문항", "제출한 답", "정답", "연속 맞힘", "다음 복습일"].forEach((h) => htr.appendChild(el("th", null, h)));
   thead.appendChild(htr);
   const tbody = el("tbody");
   list.slice().reverse().forEach((w, i) => {

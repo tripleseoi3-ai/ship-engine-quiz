@@ -269,6 +269,9 @@ details.src .cnt { margin-left: auto; font-family: var(--mono); font-size: var(-
 .choice.pick-right { border-color: var(--ok); background: var(--ok-wash); }
 .choice.pick-wrong { border-color: var(--bad); background: var(--bad-wash); }
 .choice.show-answer { border-color: var(--ok); }
+/* 디자인.md 4장 — 아직 채점하지 않았을 때 고른 보기. 초록을 쓰지 않는다. */
+.choice.picked { border-color: var(--accent); background: var(--surface-alt); }
+.choice .mark { margin-left: auto; font-size: var(--t-meta); font-weight: 500; color: var(--accent); flex: none; }
 .ox { display: flex; gap: 6px; }
 .ox .choice { justify-content: center; font-family: var(--mono); font-size: 20px; font-weight: 500; }
 
