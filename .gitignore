@@ -8,6 +8,15 @@
 # 파일은 내 컴퓨터에 그대로 남는다. 올리려면 이 두 줄을 지우면 된다.
 docs/specs/
 
+# 로컬 서버가 저장하는 내 공부 기록 — 등록한 과목과 오답. 개인 자료라 올리지 않는다.
+server/data/
+
+# Node
+node_modules/
+
+# 감시 프로그램(Geni Insights)이 변수를 못 풀어 만든 빈 폴더
+%programdata%/
+
 # OS / 편집기
 Thumbs.db
 desktop.ini

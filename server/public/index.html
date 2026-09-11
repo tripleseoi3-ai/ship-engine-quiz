@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시험노트 — 로컬 서버</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     프론트엔드. 이 파일은 화면만 담당한다.
+     자료도, 정답도, 채점도 여기 없다 — 전부 서버에 물어본다.
+     서버와 이야기하는 코드는 app.js 에 있다.
+     ============================================================ -->
+
+<div class="util">
+  <div class="in">
+    <span class="sys">시험노트</span>
+    <span class="sep">|</span>
+    <span>프론트엔드 · 브라우저</span>
+    <span class="right">
+      <span class="conn" id="conn"><i></i><span id="connText">서버 확인 중…</span></span>
+    </span>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="in">
+    <div>
+      <h1>시험노트</h1>
+      <div class="sub">과목을 직접 등록하고, 서버가 낸 문제를 풀고, 틀린 것만 다시 봅니다</div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<nav class="crumb" aria-label="현재 위치">
+  <div class="in" id="crumb"></div>
+</nav>
+
+<div class="wrap">
+  <div class="col side">
+    <section class="panel">
+      <header class="panel-head">
+        <h2>내 과목</h2>
+        <span class="aside" id="courseCount">0</span>
+      </header>
+      <div class="panel-body tight">
+        <ul class="courses" id="courses"></ul>
+        <p class="side-empty" id="coursesEmpty">등록된 과목이 없습니다.</p>
+      </div>
+      <div class="panel-body" style="border-top:1px solid var(--line-soft)">
+        <button type="button" class="btn btn-block" id="btnNew">＋ 과목 등록</button>
+      </div>
+    </section>
+
+    <section class="panel" id="statPanel" hidden>
+      <header class="panel-head"><h2>학습 현황</h2></header>
+      <div class="panel-body"><dl class="stats" id="stats"></dl></div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <h2>서버와 주고받은 것</h2>
+        <span class="aside" id="wireCount">0</span>
+      </header>
+      <div class="panel-body">
+        <p class="note" style="margin:0 0 8px">화면에서 무언가 할 때마다 브라우저가 서버에 보낸 요청입니다.</p>
+        <ul class="wire" id="wire"></ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="col" id="main"></div>
+</div>
+
+<footer class="foot">
+  <div class="in">
+    <span><b>프론트엔드</b> · 지금 보고 있는 이 화면. <code>server/public/</code> 의 html·css·js 세 파일.</span>
+    <span><b>백엔드</b> · <code>server/server.js</code>. 자료를 가지고 있고, 문제를 만들고, 채점합니다.</span>
+    <span><b>정답은 서버에만 있습니다</b> · 문제를 받을 때 정답은 안 옵니다. 답을 보내야 채점 결과가 옵니다. 페이지 소스를 봐도 답이 없습니다.</span>
+    <span><b>저장 위치</b> · <code>server/data/db.json</code>. 인터넷으로 나가지 않고 이 컴퓨터에만 있습니다.</span>
+  </div>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
