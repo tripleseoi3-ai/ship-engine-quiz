@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>항해·법규·기관 문제풀이</title>
+<style>
+/* ============================================================
+   색·크기·굵기는 모두 디자인.md 에서 가져왔다.
+   여기서 새 값을 만들지 않는다.
+   인터넷에서 아무것도 불러오지 않는다 — 글꼴은 기기에 있는 것만 쓴다.
+   ============================================================ */
+
+:root {
+  /* 디자인.md 1장 — 밝은 화면 */
+  --ground: #EEF1F5;
+  --surface: #FFFFFF;
+  --surface-alt: #F7F9FB;
+  --ink: #1C2530;
+  --ink-soft: #55616F;
+  --ink-faint: #66737F;
+  --accent: #1B6FB8;
+  --navy: #10335E;
+  --navy-deep: #0A2342;
+  --ok: #1B6E43;
+  --ok-wash: #E7F3EC;
+  --bad: #B5342B;
+  --bad-wash: #FBEAE8;
+  --warn: #9C6B12;
+  --warn-wash: #FBF2DF;
+  --line: #D5DCE4;
+  --line-soft: #E6EBF0;
+  --on-accent: #FFFFFF;
+
+  /* 디자인.md 2장 — 글자 크기 */
+  --t-site: 26px;
+  --t-box: 15px;
+  --t-question: 17px;
+  --t-body: 15px;
+  --t-note: 13px;
+  --t-meta: 12px;
+
+  --rad: 3px;
+
+  --sans: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Nanum Gothic", system-ui, -apple-system, sans-serif;
+  --mono: Consolas, "D2Coding", "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 디자인.md 1장 — 어두운 화면. 밝은 값을 뒤집지 않고 짝을 바꿔 쓴다. */
+    --ground: #0D1419;
+    --surface: #151E26;
+    --surface-alt: #18232C;
+    --ink: #E3E9EF;
+    --ink-soft: #9BA8B6;
+    --ink-faint: #8C99A6;
+    --accent: #64A9DF;
+    --navy: #16283C;
+    --navy-deep: #0E1B28;
+    --ok: #5BBE8B;
+    --ok-wash: #11291E;
+    --bad: #E77A72;
+    --bad-wash: #2C1615;
+    --warn: #D6A443;
+    --warn-wash: #2B2213;
+    --line: #27333E;
+    --line-soft: #1E2933;
+    --on-accent: #08131D;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+button, input { font-family: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* 디자인.md 6장 — 동작 줄이기를 켜 두면 움직임을 전부 멈춘다 */
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- 상단 남색 띠 ---------- */
+
+.topbar { background: var(--navy); color: #FFFFFF; border-bottom: 3px solid var(--accent); }
+.topbar .in { max-width: 760px; margin: 0 auto; padding: 14px 18px; }
+.topbar h1 { margin: 0; font-size: var(--t-site); font-weight: 700; }
+.topbar p { margin: 2px 0 0; font-size: var(--t-note); color: #C3D2E2; }
+
+/* ---------- 본문 ---------- */
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+
+/* 디자인.md 3장 — 문제 하나가 흰 상자 하나를 차지한다. 그림자 없음, 테두리 1px, 반지름 3px */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad); }
+
+.panel-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; background: var(--surface-alt);
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--rad) var(--rad) 0 0;
+}
+.panel-head::before { content: ""; width: 3px; height: 13px; background: var(--accent); flex: none; }
+.panel-head h2 { margin: 0; font-size: var(--t-box); font-weight: 600; }
+.panel-head .aside { margin-left: auto; font-size: var(--t-meta); font-weight: 500; color: var(--ink-faint); }
+
+.panel-body { padding: 14px; }
+
+/* ---------- 진행 줄 ---------- */
+
+.progress {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 9px 14px; background: var(--surface-alt); border-bottom: 1px solid var(--line);
+  font-size: var(--t-meta); font-weight: 500; color: var(--ink-soft);
+  font-family: var(--mono);
+}
+.progress .track { flex: 1; min-width: 110px; height: 5px; background: var(--line-soft); border-radius: 999px; overflow: hidden; }
+/* 디자인.md 6장 — 허용된 움직임은 진행 줄 채워짐뿐이고 0.25초 이하 */
+.progress .track > i { display: block; height: 100%; background: var(--accent); transition: width .25s; }
+
+/* ---------- 문제 ---------- */
+
+.badge {
+  display: inline-block; font-size: var(--t-meta); font-weight: 500;
+  border: 1px solid var(--line); background: var(--surface-alt); color: var(--ink-soft);
+  padding: 2px 9px; border-radius: 999px;
+}
+.badge.b-choice { border-color: var(--accent); color: var(--accent); }
+.badge.b-ox { border-color: var(--warn); color: var(--warn); background: var(--warn-wash); }
+.badge.b-short { border-color: var(--ok); color: var(--ok); background: var(--ok-wash); }
+
+/* 디자인.md 2장 — 문제 문장 17px / 굵기 500 */
+.question { font-size: var(--t-question); font-weight: 500; margin: 12px 0 16px; line-height: 1.6; overflow-wrap: anywhere; }
+.question .blank { font-family: var(--mono); color: var(--accent); }
+
+/* 디자인.md 3장 — 보기는 세로로 쌓고, 간격 6px, 한 칸 40px 이상 */
+.choices { display: flex; flex-direction: column; gap: 6px; }
+.choice {
+  display: flex; align-items: baseline; gap: 10px;
+  min-height: 40px; width: 100%; text-align: left;
+  padding: 10px 13px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad);
+  font-size: var(--t-body); font-weight: 400; cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.choice:hover:not(:disabled) { border-color: var(--accent); }
+.choice:disabled { cursor: default; }
+.choice .ix { font-family: var(--mono); font-size: var(--t-note); color: var(--ink-faint); flex: none; }
+
+/* 디자인.md 4장 — 고른 보기와 정답 보기를 각각 표시한다 */
+.choice.pick-right { border-color: var(--ok); background: var(--ok-wash); }
+.choice.pick-wrong { border-color: var(--bad); background: var(--bad-wash); }
+.choice.show-answer { border-color: var(--ok); }
+
+/* 디자인.md 3장 — OX만 가로로 둘, 폭을 절반씩 */
+.ox { display: flex; gap: 6px; }
+.ox .choice { justify-content: center; font-family: var(--mono); font-size: 20px; font-weight: 500; }
+
+.short-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+input[type="text"] {
+  flex: 1; min-width: 200px; min-height: 40px;
+  padding: 8px 10px; font-size: var(--t-body);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--rad);
+}
+input[type="text"]:focus { border-color: var(--accent); }
+
+/* ---------- 채점 결과 ---------- */
+/* 디자인.md 3장 — 결과는 문제 아래에 붙인다. 떠 있는 창으로 띄우지 않는다 */
+
+.verdict { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--rad); overflow: hidden; }
+.verdict .vh { padding: 8px 13px; font-size: var(--t-note); font-weight: 600; }
+.verdict.right .vh { background: var(--ok-wash); color: var(--ok); border-bottom: 1px solid var(--ok); }
+.verdict.wrong .vh { background: var(--bad-wash); color: var(--bad); border-bottom: 1px solid var(--bad); }
+.verdict .vb { padding: 12px 13px; display: flex; flex-direction: column; gap: 7px; font-size: var(--t-note); }
+
+.line { color: var(--ink-soft); overflow-wrap: anywhere; }
+.line .ans { color: var(--ok); font-weight: 600; }
+.line .mine { color: var(--bad); text-decoration: line-through; }
+.why { color: var(--ink-soft); overflow-wrap: anywhere; }
+/* 출처는 곁 정보 — 디자인.md 1장의 곁 정보 색을 쓴다 */
+.src { color: var(--ink-faint); font-size: var(--t-meta); font-weight: 500; overflow-wrap: anywhere; }
+.rule { color: var(--ink-faint); font-size: var(--t-meta); }
+.nodata { color: var(--warn); font-weight: 600; }
+
+/* ---------- 버튼 ---------- */
+/* 디자인.md 5장 — 직사각형, 반지름 3px, 높이 36px 이상, 13px/500, 상자 맨 아래 왼쪽부터 */
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.btn {
+  min-height: 36px; padding: 8px 14px;
+  font-size: var(--t-note); font-weight: 500;
+  border: 1px solid var(--line); border-radius: var(--rad);
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: var(--surface-alt); border-color: var(--ink-faint); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn-primary:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+.btn-text { border-color: transparent; background: none; color: var(--accent); }
+.btn-text:hover:not(:disabled) { background: var(--surface-alt); border-color: transparent; }
+
+/* ---------- 결과 화면 ---------- */
+
+.score { display: flex; align-items: baseline; gap: 8px; font-family: var(--mono); }
+.score b { font-size: 32px; font-weight: 600; color: var(--accent); }
+.score span { color: var(--ink-soft); font-size: var(--t-body); }
+
+.review { list-style: none; margin: 14px 0 0; padding: 0; }
+.review > li { border-top: 1px solid var(--line-soft); padding: 13px 0; display: flex; flex-direction: column; gap: 6px; }
+.review > li:first-child { border-top: 0; padding-top: 0; }
+.review .rq { font-size: var(--t-body); font-weight: 500; overflow-wrap: anywhere; }
+
+.note { font-size: var(--t-note); color: var(--ink-soft); }
+.note b { color: var(--ink); }
+
+/* ---------- 바닥 ---------- */
+
+.foot { background: var(--navy-deep); color: #92A6BB; margin-top: 8px; }
+.foot .in { max-width: 760px; margin: 0 auto; padding: 16px 18px 22px; font-size: var(--t-note); display: flex; flex-direction: column; gap: 4px; }
+.foot b { color: #C8D6E4; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="in">
+    <h1>시험대비</h1>
+    <p id="subtitle">항해학 기초 · 해사법규 요약 · 선박 기관 기초</p>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<footer class="foot">
+  <div class="in">
+    <span><b>문제 출처</b> · 모든 문항은 <code>실습파일/학습자료/</code> 의 세 파일에서만 뽑았습니다. 자료에 없는 내용으로 지어낸 문항은 없습니다.</span>
+    <span><b>인터넷 연결</b> · 이 파일은 아무것도 내려받지 않습니다. 글꼴·색·문제 모두 파일 안에 들어 있습니다.</span>
+    <span><b>주의</b> · 학습자료는 교육 실습용 요약본입니다. 실제 시험과 법령은 원문을 확인하세요.</span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   문제 17개. 모두 실습파일/학습자료/ 의 세 파일에서 뽑았다.
+   자료에 없는 내용은 만들지 않았다.
+   src = 어느 파일 어느 절에서 나왔는지.
+   ============================================================ */
+
+var QUESTIONS = [
+
+  /* ---------- 항해학_기초.md ---------- */
+  {
+    type: "choice",
+    q: "천체의 고도를 측정해 위치선을 얻는 항법은 무엇입니까?",
+    choices: ["지문항법", "천문항법", "전파항법", "추측항법"],
+    a: "천문항법",
+    why: "천문항법은 천체의 고도를 측정해 위치선을 얻는 방법으로, 주로 대양 항해에서 씁니다. 지문항법은 육지의 물표를 관측해 위치를 구하는 방법이고 연안 항해에서 씁니다.",
+    src: "항해학_기초.md · 1. 항법의 종류"
+  },
+  {
+    type: "choice",
+    q: "추측 위치가 조류와 바람의 영향으로 실제 위치와 벌어지는 차이를 무엇이라고 합니까?",
+    choices: ["편차", "자차", "편류", "조차"],
+    a: "편류",
+    why: "추측 위치는 조류와 바람의 영향을 받아 실제 위치와 차이가 생기며, 이 차이를 편류라고 부릅니다. 편차는 진북과 자북의 차이, 자차는 선체의 철재와 전기 장비가 자침에 주는 영향입니다.",
+    src: "항해학_기초.md · 1. 항법의 종류 · 2. 방위와 침로"
+  },
+  {
+    type: "short",
+    q: "빈칸을 채우세요.  진방위 = 나침방위 + ____ + 편차",
+    a: "자차",
+    also: [],
+    why: "자료의 관계식은 「진방위 = 나침방위 + 자차 + 편차」입니다. 자차는 선체의 철재와 전기 장비가 자침에 주는 영향이며 선수 방향에 따라 달라집니다.",
+    src: "항해학_기초.md · 2. 방위와 침로"
+  },
+  {
+    type: "ox",
+    q: "편차는 선체의 철재와 전기 장비가 자침에 주는 영향을 말한다.",
+    a: "X",
+    why: "그것은 자차의 정의입니다. 편차는 진북과 자북의 차이이며 장소와 연도에 따라 달라집니다. 자차는 선수 방향에 따라 달라집니다.",
+    src: "항해학_기초.md · 2. 방위와 침로"
+  },
+  {
+    type: "choice",
+    q: "수심을 측정하는 항해 계기는 무엇입니까?",
+    choices: ["선속계", "음향측심기", "자이로컴퍼스", "레이더"],
+    a: "음향측심기",
+    why: "음향측심기는 수심을 측정하며, 확인 포인트는 흘수 보정 여부입니다. 선속계는 속력과 항주 거리를 측정하고, 자이로컴퍼스는 진북을 지시하며, 레이더는 물표 탐지와 충돌 예방에 씁니다.",
+    src: "항해학_기초.md · 3. 항해 계기"
+  },
+  {
+    type: "short",
+    q: "삭망 무렵에 조차가 가장 커지는 때를 무엇이라고 합니까?",
+    a: "대조",
+    also: ["대조기"],
+    why: "대조는 삭망 무렵에 조차가 가장 커지는 때이고, 소조는 상현·하현 무렵에 조차가 가장 작아지는 때입니다.",
+    src: "항해학_기초.md · 4. 조석과 조류"
+  },
+  {
+    type: "choice",
+    q: "붉은색 전주등 3개를 수직으로 표시하는 선박은 무엇입니까?",
+    choices: ["조종불능선", "흘수제약선", "어로 종사선", "정박선"],
+    a: "흘수제약선",
+    why: "흘수제약선은 붉은색 전주등 3개를 수직으로 표시하며, 수심 때문에 진로 변경이 어렵다는 뜻입니다. 조종불능선은 붉은색 전주등 2개를 수직으로 표시합니다.",
+    src: "항해학_기초.md · 5. 등화와 형상물"
+  },
+  {
+    type: "short",
+    q: "항로 계획 네 단계 중, 변침점과 안전 등심선, 비상 대피 항구를 해도에 표기하는 단계는 무엇입니까?",
+    a: "계획",
+    also: ["계획 단계"],
+    why: "네 단계는 평가 → 계획 → 실행 → 감시 순서입니다. 계획 단계에서 변침점과 안전 등심선, 비상 대피 항구를 해도에 표기합니다.",
+    src: "항해학_기초.md · 6. 항로 계획 네 단계"
+  },
+
+  /* ---------- 해사법규_요약.md ---------- */
+  {
+    type: "choice",
+    q: "횡단하는 상태에서 피항해야 하는 선박은 어느 쪽입니까?",
+    choices: [
+      "다른 선박을 우현 쪽에 두고 있는 선박",
+      "다른 선박을 좌현 쪽에 두고 있는 선박",
+      "속력이 더 빠른 선박",
+      "크기가 더 큰 선박"
+    ],
+    a: "다른 선박을 우현 쪽에 두고 있는 선박",
+    why: "횡단하는 상태에서는 다른 선박을 우현 쪽에 두고 있는 선박이 피항합니다. 마주치는 상태에서는 양 선박이 각각 우현으로 변침합니다. 속력이나 크기로 정한다는 내용은 자료에 없음.",
+    src: "해사법규_요약.md · 2. 항법 요약"
+  },
+  {
+    type: "ox",
+    q: "충돌 위험 여부가 분명하지 않을 때는 위험이 없다고 보고 그대로 항행한다.",
+    a: "X",
+    why: "자료는 반대로 적고 있습니다. 충돌 위험 여부가 분명하지 않을 때는 위험이 있다고 보고 조치합니다.",
+    src: "해사법규_요약.md · 1. 해상교통안전 일반"
+  },
+  {
+    type: "short",
+    q: "선박의 우선 관계 순서에서 가장 먼저 오는 선박은 무엇입니까?",
+    a: "조종불능선",
+    also: [],
+    why: "순서는 조종불능선 → 조종제한선 → 흘수제약선 → 어로 종사선 → 범선 → 동력선입니다. 조종 성능이 제한된 선박이 우선합니다.",
+    src: "해사법규_요약.md · 3. 선박의 우선 관계"
+  },
+  {
+    type: "choice",
+    q: "안전속력을 정할 때 고려하는 것으로 자료에 적혀 있지 않은 것은 무엇입니까?",
+    choices: ["시계와 교통량", "선박의 조종 성능", "선원의 승선 경력", "야간 배경광"],
+    a: "선원의 승선 경력",
+    why: "자료가 든 고려 사항은 시계와 교통량, 선박의 조종 성능, 야간 배경광, 바람과 조류, 레이더 성능입니다. 선원의 승선 경력은 자료에 없음.",
+    src: "해사법규_요약.md · 1. 해상교통안전 일반"
+  },
+  {
+    type: "choice",
+    q: "해양환경 관리에서 배출이 금지된 폐기물로 자료에 명시된 것은 무엇입니까?",
+    choices: ["플라스틱", "음식물 찌꺼기", "종이", "목재"],
+    a: "플라스틱",
+    why: "플라스틱은 배출 금지이고, 그 밖의 폐기물은 종류와 거리 기준을 적용합니다. 음식물·종이·목재 각각의 개별 기준은 자료에 없음.",
+    src: "해사법규_요약.md · 5. 해양환경 관리"
+  },
+  {
+    type: "short",
+    q: "사고가 났을 때 가장 먼저 하는 조치는 무엇입니까? (두 글자 이상)",
+    a: "인명 안전 확보",
+    also: ["인명안전", "인명 안전", "인명 안전 확보와 인원 점검", "인명안전확보와인원점검"],
+    why: "조치 순서는 ① 인명 안전 확보와 인원 점검 ② 추가 피해 방지 조치와 응급 조치 ③ 관계 기관 신고와 상황 보고 ④ 기록 작성과 증거 보전 ⑤ 원인 조사와 재발 방지 대책 수립입니다.",
+    src: "해사법규_요약.md · 6. 사고 발생 시 조치 순서"
+  },
+
+  /* ---------- 선박기관_기초.md ---------- */
+  {
+    type: "short",
+    q: "빈칸을 채우세요.  디젤기관 4행정은  흡입 → 압축 → ____ → 배기  순서다.",
+    a: "폭발",
+    also: [],
+    why: "흡입, 압축, 폭발, 배기 순서로 한 사이클이 완성됩니다.",
+    src: "선박기관_기초.md · 2. 디젤기관의 4행정"
+  },
+  {
+    type: "ox",
+    q: "2행정 기관은 크랭크축 2회전에 한 사이클을 끝낸다.",
+    a: "X",
+    why: "2행정 기관은 소기와 압축, 폭발과 배기를 겹쳐 크랭크축 1회전에 한 사이클을 끝냅니다.",
+    src: "선박기관_기초.md · 2. 디젤기관의 4행정"
+  },
+  {
+    type: "choice",
+    q: "냉각수 계통에서 해수가 하는 일은 무엇입니까?",
+    choices: ["기관을 직접 냉각한다", "청수를 다시 냉각한다", "연료를 가열한다", "기관을 기동한다"],
+    a: "청수를 다시 냉각한다",
+    why: "청수는 기관을 직접 냉각하고, 해수는 그 청수를 다시 냉각합니다. 연료 가열은 연료유 계통이, 기관 기동은 시동공기 계통이 맡습니다.",
+    src: "선박기관_기초.md · 3. 주요 보조 계통"
+  },
+  {
+    type: "choice",
+    q: "연소 시 이산화탄소가 나오지 않는 것이 장점이고, 독성과 연소 안정성이 과제인 연료는 무엇입니까?",
+    choices: ["액화천연가스", "메탄올", "암모니아", "수소"],
+    a: "암모니아",
+    why: "암모니아는 연소 시 이산화탄소가 나오지 않지만 독성과 연소 안정성이 과제입니다. 수소는 배출가스가 물 중심이고 저장 밀도와 인프라가 과제, 메탄올은 상온 액체라 취급이 쉽지만 발열량이 낮습니다.",
+    src: "선박기관_기초.md · 4. 친환경 연료 전환 동향"
+  },
+  {
+    type: "short",
+    q: "열효율이 높고 직결 추진이 가능해 대형 상선에 쓰는 주기관은 무엇입니까?",
+    a: "저속 2행정 디젤기관",
+    also: ["저속2행정디젤기관", "저속 2행정", "2행정 디젤기관", "저속 2행정 디젤"],
+    why: "저속 2행정 디젤기관은 열효율이 높고 직결 추진이 가능해 대형 상선에 씁니다. 중속 4행정 디젤기관은 크기가 작고 감속기를 통해 추진하며 중소형선과 발전기에 씁니다.",
+    src: "선박기관_기초.md · 1. 주기관의 종류"
+  },
+  {
+    type: "ox",
+    q: "이상음과 진동, 누유는 계기 수치가 변한 뒤에 나타나는 신호다.",
+    a: "X",
+    why: "자료는 반대로 적고 있습니다. 이상음, 진동, 누유는 수치보다 먼저 나타나는 신호입니다.",
+    src: "선박기관_기초.md · 5. 당직과 점검"
+  }
+];
+
+/* ============================================================
+   채점 — 띄어쓰기와 조사 차이는 정답으로 본다.
+   끝에 붙은 조사 하나만, 남는 길이가 2자 이상일 때만 떼어낸다.
+   ============================================================ */
+
+var JOSA = ["으로서", "으로써", "이라는", "에서는", "에게서", "으로", "로서", "로써", "에서", "에게",
+            "까지", "부터", "이란", "라는", "은", "는", "이", "가", "을", "를", "의", "에", "와", "과", "도", "만", "로"];
+
+function normalize(s) {
+  if (s == null) return "";
+  var t = String(s).trim().toLowerCase();
+  t = t.replace(/\s+/g, "");
+  t = t.replace(/[.,!?;·、。"'()\[\]<>{}]/g, "");
+  for (var i = 0; i < JOSA.length; i++) {
+    var j = JOSA[i];
+    if (t.length - j.length >= 2 && t.slice(-j.length) === j) { t = t.slice(0, -j.length); break; }
+  }
+  return t;
+}
+
+function isCorrect(given, q) {
+  var g = normalize(given);
+  if (!g) return false;
+  if (g === normalize(q.a)) return true;
+  var alt = q.also || [];
+  for (var i = 0; i < alt.length; i++) if (g === normalize(alt[i])) return true;
+  return false;
+}
+
+/* ============================================================
+   화면
+   ============================================================ */
+
+var TYPE_NAME = { choice: "객관식", ox: "OX", short: "주관식" };
+var app = document.getElementById("app");
+
+/* 문항 수는 손으로 적지 않는다 — 목록에서 직접 센다 */
+document.getElementById("subtitle").textContent =
+  "항해학 기초 · 해사법규 요약 · 선박 기관 기초 — 전 " + QUESTIONS.length + "문항";
+
+var state = { ix: 0, given: null, checked: false, right: 0, log: [], done: false };
+
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function questionText(text) {
+  var p = el("p", "question");
+  String(text).split("____").forEach(function (part, i) {
+    if (i) p.appendChild(el("span", "blank", "____"));
+    if (part) p.appendChild(document.createTextNode(part));
+  });
+  return p;
+}
+
+/* 해설 + 출처. 출처는 해설 끝에 붙는다. */
+function explain(q) {
+  var box = document.createDocumentFragment();
+  var why = el("p", "why");
+  why.style.margin = "0";
+  String(q.why).split("자료에 없음").forEach(function (part, i) {
+    if (i) why.appendChild(el("span", "nodata", "자료에 없음"));
+    if (part) why.appendChild(document.createTextNode(part));
+  });
+  box.appendChild(why);
+  box.appendChild(el("p", "src", "출처 · 실습파일/학습자료/" + q.src));
+  return box;
+}
+
+function render() {
+  app.innerHTML = "";
+  if (state.done) { app.appendChild(viewResult()); return; }
+  app.appendChild(viewQuestion());
+}
+
+function viewQuestion() {
+  var q = QUESTIONS[state.ix];
+  var box = el("section", "panel");
+
+  /* 제목 바 */
+  var head = el("header", "panel-head");
+  head.appendChild(el("h2", null, "문제 풀이"));
+  head.appendChild(el("span", "aside", "학습자료에서 출제"));
+  box.appendChild(head);
+
+  /* 진행 줄 */
+  var prog = el("div", "progress");
+  prog.appendChild(el("span", null, (state.ix + 1) + " / " + QUESTIONS.length));
+  var track = el("div", "track");
+  var fill = el("i");
+  fill.style.width = (state.ix / QUESTIONS.length * 100) + "%";
+  track.appendChild(fill);
+  prog.appendChild(track);
+  prog.appendChild(el("span", null, "정답 " + state.right));
+  box.appendChild(prog);
+
+  var body = el("div", "panel-body");
+
+  /* 유형 배지 → 문제 → 보기 → 채점 결과 → 버튼 (디자인.md 3장 순서) */
+  body.appendChild(el("span", "badge b-" + q.type, TYPE_NAME[q.type]));
+  body.appendChild(questionText(q.q));
+
+  if (q.type === "choice" || q.type === "ox") {
+    var list = el("div", q.type === "ox" ? "ox" : "choices");
+    var opts = q.type === "ox" ? ["O", "X"] : q.choices;
+    opts.forEach(function (c, i) {
+      var b = el("button", "choice");
+      b.type = "button";
+      if (q.type === "choice") b.appendChild(el("span", "ix", (i + 1) + "."));
+      b.appendChild(el("span", null, c));
+      if (state.checked) {
+        b.disabled = true;
+        var isAnswer = normalize(c) === normalize(q.a);
+        var isPick = normalize(c) === normalize(state.given);
+        if (isPick && isAnswer) b.className = "choice pick-right";
+        else if (isPick) b.className = "choice pick-wrong";
+        else if (isAnswer) b.className = "choice show-answer";
+      } else {
+        b.addEventListener("click", function () { submit(c); });
+      }
+      list.appendChild(b);
+    });
+    body.appendChild(list);
+  } else {
+    var row = el("div", "short-row");
+    var input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "답을 입력하세요";
+    if (state.checked) { input.value = state.given || ""; input.disabled = true; }
+    row.appendChild(input);
+    body.appendChild(row);
+    if (!state.checked) {
+      var r = el("div", "btn-row");
+      var sb = el("button", "btn btn-primary", "제출");
+      sb.type = "button";
+      sb.addEventListener("click", function () { submit(input.value); });
+      r.appendChild(sb);
+      var sk = el("button", "btn", "모르겠습니다");
+      sk.type = "button";
+      sk.addEventListener("click", function () { submit(""); });
+      r.appendChild(sk);
+      body.appendChild(r);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); submit(input.value); }
+      });
+      setTimeout(function () { try { input.focus(); } catch (e) {} }, 0);
+    }
+  }
+
+  /* 채점 결과 — 글자·색·위치 세 가지로 알린다 (디자인.md 4장) */
+  if (state.checked) {
+    var ok = isCorrect(state.given, q);
+    var v = el("div", "verdict " + (ok ? "right" : "wrong"));
+    v.appendChild(el("div", "vh", ok ? "정답입니다" : "오답입니다"));
+    var vb = el("div", "vb");
+
+    var l1 = el("p", "line");
+    l1.style.margin = "0";
+    l1.appendChild(document.createTextNode("정답 · "));
+    l1.appendChild(el("span", "ans", q.a));
+    vb.appendChild(l1);
+
+    if (!ok) {
+      var l2 = el("p", "line");
+      l2.style.margin = "0";
+      if (String(state.given || "").trim()) {
+        l2.appendChild(document.createTextNode("제출한 답 · "));
+        l2.appendChild(el("span", "mine", state.given));
+      } else {
+        l2.appendChild(document.createTextNode("제출한 답 · 없음 (모르겠습니다)"));
+      }
+      vb.appendChild(l2);
+    }
+
+    if (q.type === "short") {
+      vb.appendChild(el("p", "rule", "채점 기준 · 띄어쓰기와 조사 차이는 정답으로 처리합니다."));
+    }
+
+    vb.appendChild(explain(q));
+    v.appendChild(vb);
+    body.appendChild(v);
+
+    var nr = el("div", "btn-row");
+    var next = el("button", "btn btn-primary", state.ix + 1 >= QUESTIONS.length ? "결과 보기" : "다음 문제");
+    next.type = "button";
+    next.addEventListener("click", advance);
+    nr.appendChild(next);
+    body.appendChild(nr);
+    setTimeout(function () { try { next.focus(); } catch (e) {} }, 0);
+  }
+
+  box.appendChild(body);
+  return box;
+}
+
+function submit(given) {
+  var q = QUESTIONS[state.ix];
+  state.given = given;
+  state.checked = true;
+  var ok = isCorrect(given, q);
+  if (ok) state.right++;
+  state.log.push({ q: q, given: given, ok: ok });
+  render();
+}
+
+function advance() {
+  if (state.ix + 1 >= QUESTIONS.length) state.done = true;
+  else { state.ix++; state.given = null; state.checked = false; }
+  render();
+}
+
+function viewResult() {
+  var frag = document.createDocumentFragment();
+  var total = QUESTIONS.length;
+  var wrong = state.log.filter(function (r) { return !r.ok; });
+
+  var box = el("section", "panel");
+  var head = el("header", "panel-head");
+  head.appendChild(el("h2", null, "풀이 결과"));
+  head.appendChild(el("span", "aside", "전 " + total + "문항"));
+  box.appendChild(head);
+
+  var body = el("div", "panel-body");
+  var sc = el("div", "score");
+  sc.appendChild(el("b", null, String(state.right)));
+  sc.appendChild(el("span", null, "/ " + total + " 문항  ·  정답률 " + Math.round(state.right / total * 100) + "%"));
+  body.appendChild(sc);
+
+  var msg = el("p", "note");
+  msg.style.marginBottom = "0";
+  if (wrong.length) {
+    msg.appendChild(document.createTextNode("틀린 문항 "));
+    msg.appendChild(el("b", null, wrong.length + "개"));
+    msg.appendChild(document.createTextNode("를 아래에 모았습니다. 해설과 출처를 보고 원문을 다시 확인하세요."));
+  } else {
+    msg.textContent = "틀린 문항이 없습니다.";
+  }
+  body.appendChild(msg);
+
+  var r = el("div", "btn-row");
+  var again = el("button", "btn btn-primary", "처음부터 다시 풀기");
+  again.type = "button";
+  again.addEventListener("click", function () {
+    state = { ix: 0, given: null, checked: false, right: 0, log: [], done: false };
+    render();
+    window.scrollTo(0, 0);
+  });
+  r.appendChild(again);
+  body.appendChild(r);
+  box.appendChild(body);
+  frag.appendChild(box);
+
+  if (wrong.length) {
+    var wb = el("section", "panel");
+    var wh = el("header", "panel-head");
+    wh.appendChild(el("h2", null, "틀린 문항 해설"));
+    wh.appendChild(el("span", "aside", wrong.length + "건"));
+    wb.appendChild(wh);
+    var wbody = el("div", "panel-body");
+    var ul = el("ul", "review");
+    wrong.forEach(function (rec) {
+      var li = el("li");
+      li.appendChild(el("p", "rq", "[" + TYPE_NAME[rec.q.type] + "] " + rec.q.q));
+      var l = el("p", "line");
+      l.style.margin = "0";
+      if (String(rec.given || "").trim()) {
+        l.appendChild(document.createTextNode("제출한 답 · "));
+        l.appendChild(el("span", "mine", rec.given));
+        l.appendChild(document.createTextNode("   정답 · "));
+      } else {
+        l.appendChild(document.createTextNode("제출한 답 · 없음   정답 · "));
+      }
+      l.appendChild(el("span", "ans", rec.q.a));
+      li.appendChild(l);
+      li.appendChild(explain(rec.q));
+      ul.appendChild(li);
+    });
+    wbody.appendChild(ul);
+    wb.appendChild(wbody);
+    frag.appendChild(wb);
+  }
+
+  return frag;
+}
+
+render();
+</script>
+
+</body>
+</html>
