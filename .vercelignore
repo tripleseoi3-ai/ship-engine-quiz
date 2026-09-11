@@ -1,5 +1,11 @@
 # Vercel 로 올릴 때 업로드에서 빼는 것.
-# 배포에 필요한 건 시험대비.html, scripts/, package.json, vercel.json 뿐이다.
+#
+# 빌드(scripts/build.mjs)가 읽는 것은 이 여섯이다. 하나라도 빼면 배포가 실패한다.
+#   시험대비.html · web/index.html · web/app.js
+#   server/lib/study.js · server/public/style.css · package.json
+#
+# 2026-09-11: 여기서 server/ 전체를 빼 두는 바람에 배포가 두 번 연속 실패했다
+# (`빌드 실패: 파일이 없습니다: server/lib/study.js`). 개인 기록인 server/data/ 만 뺀다.
 
 # 수업 교재 (코드잇 배포본) — 남의 저작물이라 올리지 않는다
 교안_2차_AI바이브코딩.pdf
@@ -12,13 +18,12 @@
 # 인터뷰·골 기록 — 본인이 한 말이 그대로 들어 있다
 docs/
 
-# 내 공부 기록
+# 내 공부 기록 (로컬 서버가 쌓아 둔 것)
 server/data/
 
 # 배포에 안 쓰는 것
 .claude/
 app/
-server/
 .git/
 node_modules/
 %programdata%/
